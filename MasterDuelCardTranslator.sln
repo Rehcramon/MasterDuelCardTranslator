@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "MasterDuelCardTranslator", "MasterDuelCardTranslator\MasterDuelCardTranslator.pyproj", "{BE2B5D71-E949-4981-87F5-CB50C9A75F05}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE2B5D71-E949-4981-87F5-CB50C9A75F05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE2B5D71-E949-4981-87F5-CB50C9A75F05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A37DA435-BA3C-4850-BB2F-40ECE4A3EFC1}
+	EndGlobalSection
+EndGlobal
