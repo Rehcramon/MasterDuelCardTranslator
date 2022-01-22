@@ -49,7 +49,7 @@ def update_card_detail():
             sql = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
             res = cursor1.execute(sql).fetchall()
             if len(res) == 1:
-                card_detail.config(text='{} ({})\n\n{}\n\n\n\n\n*本软件还处于开发阶段'.format(res[0][0], cardname, res[0][1].replace('\r', '')))
+                card_detail.config(text='{} ({})\n\n{}\n\n\n*本软件还处于开发阶段'.format(res[0][0], cardname, res[0][1].replace('\r', '')))
                 last_cardname = cardname
     root.after(50, update_card_detail)
 
@@ -58,31 +58,3 @@ update_card_detail()
 #quit_button.pack()
 
 root.mainloop()
-
-
-
-'''while True:
-    #time.sleep(0.1)
-    pyautogui.screenshot('screenshot.png', region=(leftTopPos[0], leftTopPos[1], width, height))
-    cardname = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng', config='--psm 7')[0:-1].replace('"', '""')
-    print(cardname)
-    sql = 'SELECT id FROM data WHERE name LIKE "{}%" LIMIT 1'.format(cardname)
-    #print(sql)
-    res = cursor.execute(sql).fetchall()
-    if len(res) == 0:
-        sql = 'SELECT id FROM data WHERE name LIKE "%{}" LIMIT 1'.format(cardname)
-        #print(sql)
-        res = cursor.execute(sql).fetchall()
-    if len(res) == 1:
-        print(res[0][0])
-        sql = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
-        res = cursor1.execute(sql).fetchall()
-        if len(res) == 1:
-            print(res[0][0])
-            print(res[0][1])
-        else:
-            print('NO CARD')
-    else:
-        print('NO NAME')
-    '''
-
