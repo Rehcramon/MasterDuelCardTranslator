@@ -30,7 +30,7 @@ root.geometry('300x250')
 root.resizable(False, True)
 root.attributes('-topmost', True)
 root.update()
-card_detail = tk.Label(root, wraplength=290, justify=tk.LEFT, anchor='w')
+card_detail = tk.Label(root, wraplength=290, justify=tk.LEFT, anchor='nw')
 card_detail.pack()
 
 last_cardname = ''
