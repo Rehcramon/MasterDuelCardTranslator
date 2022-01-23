@@ -1,5 +1,6 @@
 import os
 import time
+import json
 import sqlite3
 
 import tkinter as tk
@@ -9,20 +10,16 @@ from PIL import Image
 from PIL import ImageOps
 import pytesseract
 
+settings_file = open('settings.json', 'r')
+settings = json.loads(settings_file.readline())
+position = settings['position']
+
 con = sqlite3.connect('name_and_id.db')
 cursor = con.cursor()
 cursor.execute('PRAGMA case_sensitive_like=ON;')
 
 con1 = sqlite3.connect('ygocore.cdb')
 cursor1 = con1.cursor()
-
-input('左上角')
-leftTopPos = pyautogui.position()
-input('右下角')
-rightBottomPos = pyautogui.position()
-
-width = rightBottomPos[0] - leftTopPos[0]
-height = rightBottomPos[1] - leftTopPos[1]
 
 root = tk.Tk()
 root.title('MD Card Translator')
@@ -37,7 +34,7 @@ last_cardname = ''
 
 def update_card_detail():
     global last_cardname
-    pyautogui.screenshot('screenshot.png', region=(leftTopPos[0], leftTopPos[1], width, height))
+    pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
     cardname = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng', config='--psm 7')[0:-1].replace('"', '""')
     if last_cardname != cardname:
         sql = 'SELECT id, name FROM data WHERE name LIKE "{}%" LIMIT 1'.format(cardname)
