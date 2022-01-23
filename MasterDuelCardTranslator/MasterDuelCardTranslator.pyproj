@@ -28,6 +28,9 @@
     <Compile Include="MDCT_UpdateNameAndId.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MDCT_Common.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

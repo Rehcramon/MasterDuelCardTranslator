@@ -10,9 +10,21 @@ from PIL import Image
 from PIL import ImageOps
 import pytesseract
 
-settings_file = open('settings.json', 'r')
-settings = json.loads(settings_file.readline())
-position = settings['position']
+import MDCT_Common
+
+MDCT_Common.print_info()
+
+print('正在启动Master Duel Card Translator……')
+
+try:
+    settings_file = open('settings.json', 'r')
+    settings = json.loads(settings_file.readline())
+    position = settings['position']
+except:
+    print('未能读取到所识别的文本在屏幕当中的位置设置，请先执行MDCT_PositionSetup再执行本程序。')
+    print('请关闭本程序。')
+    input()
+    raise
 
 con = sqlite3.connect('name_and_id.db')
 cursor = con.cursor()
@@ -28,6 +40,7 @@ root.resizable(False, True)
 root.attributes('-topmost', True)
 root.update()
 card_detail = tk.Label(root, wraplength=290, justify=tk.LEFT, anchor='nw')
+card_detail.config(text='未能匹配到任何数据。\n请确保所识别的区域没有被遮挡。\n如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup再执行本程序。')
 card_detail.pack()
 
 cardname_buffer = ''
