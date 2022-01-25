@@ -15,10 +15,8 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
-import time
 import json
 import sqlite3
-
 import tkinter as tk
 
 import pyautogui
@@ -50,13 +48,13 @@ con1 = sqlite3.connect('ygocore.cdb')
 cursor1 = con1.cursor()
 
 root = tk.Tk()
-root.title('MD Card Translator')
+root.title(MDCT_Common.SHORT_TITLE)
 root.geometry('300x250')
 root.resizable(False, True)
 root.attributes('-topmost', True)
 root.update()
 card_detail = tk.Label(root, wraplength=290, justify=tk.LEFT, anchor='nw')
-card_detail.config(text='未能匹配到任何数据。\n请确保所识别的区域没有被遮挡。\n如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup再执行本程序。')
+card_detail.config(text='未能匹配到任何卡名。\n请确保卡名区域没有被遮挡。尤其是本界面不能遮挡住卡名区域，请先将本界面移动到屏幕右下角。\n如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup进行配置。请务必注意配置完成时应能够识别正确的卡名。')
 card_detail.pack()
 
 cardname_buffer = ''

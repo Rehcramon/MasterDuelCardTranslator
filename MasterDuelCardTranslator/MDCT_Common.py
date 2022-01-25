@@ -14,6 +14,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+VERSION = '0.2'
+
+SHORT_TITLE = 'MDCT v{}'.format(VERSION)
+
 INFO = '''
     Master Duel Card Translator Project
     Copyright (C) 2022  Rehcramon
@@ -23,9 +27,9 @@ INFO = '''
     redistribute it under certain conditions.
     See the GNU General Public License for more details.
 
-    Version 0.2
+    Version {}
     https://github.com/Rehcramon/MasterDuelCardTranslator
-'''
+'''.format(VERSION)
 
 def print_info():
     print(INFO)
