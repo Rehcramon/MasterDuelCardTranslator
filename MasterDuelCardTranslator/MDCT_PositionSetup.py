@@ -17,6 +17,9 @@
 import json
 
 import pyautogui
+from PIL import Image
+from PIL import ImageOps
+import pytesseract
 
 import MDCT_Common
 
@@ -27,11 +30,12 @@ welcome_message = '''
 现在正在选择所需要识别的文本区域。请按照以下步骤完成。
 1. 确保Yu-Gi-Oh! Master Duel所显示的语言是英语，并且是以窗口模式运行；
 2. 启动Yu-Gi-Oh! Master Duel，进入单人模式（Solo）的任意决斗，之后任意选择一张卡片，让屏幕左侧出现卡片的信息；
-3. 回到本界面，并将本界面移动到不会遮挡到卡片名称的位置；
+3. 回到本界面，并将本界面移动到不会遮挡到卡片名称的位置，准备好之后按下回车；
 4. 将鼠标移动到卡片名称的文字区域的左上角（大约在灰色三角形右下方稍偏上的位置），按下回车；
 5. 将鼠标移动到卡片名称的文字区域的右下角（大约在属性的左下方稍偏左上的位置），按下回车。
 
-
+请务必注意，本次配置之中需要按下3次回车，需要移动2次鼠标到特定的位置。
+它们的顺序是：按下回车、移动鼠标、按下回车、移动鼠标、按下回车。
 '''
 
 print(welcome_message)
@@ -64,8 +68,13 @@ settings_file = open('settings.json', 'w')
 settings_file.write(settings_string)
 settings_file.close()
 
-print('Done.')
+pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
+cardname = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng', config='--psm 7')[:-1]
 
-print('目前所选择的区域是({}, {})与({}, {})之间的位置。'.format(left_top_pos[0], left_top_pos[1], right_bottom_pos[0], right_bottom_pos[1]))
+print('当前所识别的卡名为“{}”。'.format(cardname))
+print('如果卡名正确（如果卡名只有第1个字符和/或最后1个字符不正确，也可认为是正确的），建议关闭本程序后启动Master Duel Card Translator以查看效果。')
+print('如果卡名不正确，请重启本程序重新配置。')
+print('\n如果一直都无法配置成功，请记录下({}, {})与({}, {})这两个数据，连同MDCT文件夹中screenshot.png图片一起反馈。\n'.format(
+    left_top_pos[0], left_top_pos[1], right_bottom_pos[0], right_bottom_pos[1]))
 
-input('请关闭本程序。建议启动Master Duel Card Translator以查看效果。')
+input('请关闭本程序。谢谢。')
