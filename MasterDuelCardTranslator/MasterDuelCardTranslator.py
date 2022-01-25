@@ -64,12 +64,12 @@ def update_card_detail():
     global cardname_buffer
     global cardname_buffer_status
     pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
-    cardname = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng', config='--psm 7')[:-1].replace('"', '""')
+    cardname = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng', config='--psm 7')[:-1]
     if len(cardname) >= 1:
-        sql = 'SELECT id, name FROM data WHERE name = "{}"'.format(cardname)
+        sql = 'SELECT id, name FROM data WHERE name = "{}"'.format(cardname.replace('"', '""'))
         res = cursor.execute(sql).fetchall()
         if len(res) != 1 and len(cardname) >= 10:
-            sql = 'SELECT id, name FROM data WHERE name LIKE "{}%"'.format(cardname[:-1])
+            sql = 'SELECT id, name FROM data WHERE name LIKE "{}%"'.format(cardname[:-1].replace('"', '""'))
             res = cursor.execute(sql).fetchall()
         if len(res) != 1 and len(cardname) >= 10:
             if cardname_buffer_status == True:
@@ -89,7 +89,7 @@ def update_card_detail():
                         cardname_buffer = cardname_buffer + cardname[j:]
                         break
                 if cardname_overlap_status == True:
-                    sql = 'SELECT id, name FROM data WHERE name LIKE "{}%"'.format(cardname_buffer)
+                    sql = 'SELECT id, name FROM data WHERE name LIKE "{}%"'.format(cardname_buffer.replace('"', '""'))
                     res = cursor.execute(sql).fetchall()
                 else:
                     cardname_buffer = cardname_origin[:-1]
