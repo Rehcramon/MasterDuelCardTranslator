@@ -49,7 +49,7 @@ cursor1 = con1.cursor()
 
 root = tk.Tk()
 root.title(MDCT_Common.SHORT_TITLE)
-root.geometry('300x250')
+root.geometry('300x250+{}+{}'.format(position['x'], position['y'] + position['h'] + 20))
 root.resizable(False, True)
 root.attributes('-topmost', True)
 root.update()
