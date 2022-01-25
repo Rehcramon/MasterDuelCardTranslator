@@ -45,4 +45,4 @@ con.commit()
 cursor.close()
 con.close()
 
-print('\nDone.')
+input('\nDone.')
