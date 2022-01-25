@@ -15,10 +15,16 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 INFO = '''
-Master Duel Card Translator Project
-By Rehcramon
-Version 0.2
-https://github.com/Rehcramon/MasterDuelCardTranslator
+    Master Duel Card Translator Project
+    Copyright (C) 2022  Rehcramon
+
+    This program comes with ABSOLUTELY NO WARRANTY.
+    This is free software, and you are welcome to
+    redistribute it under certain conditions.
+    See the GNU General Public License for more details.
+
+    Version 0.2
+    https://github.com/Rehcramon/MasterDuelCardTranslator
 '''
 
 def print_info():
