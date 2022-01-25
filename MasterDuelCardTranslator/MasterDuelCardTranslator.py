@@ -18,6 +18,7 @@ import os
 import json
 import sqlite3
 import tkinter as tk
+import tkinter.scrolledtext
 
 import pyautogui
 from PIL import Image
@@ -50,11 +51,15 @@ cursor1 = con1.cursor()
 root = tk.Tk()
 root.title(MDCT_Common.SHORT_TITLE)
 root.geometry('300x250+{}+{}'.format(position['x'], position['y'] + position['h'] + 20))
-root.resizable(False, True)
+root.resizable(True, True)
 root.attributes('-topmost', True)
 root.update()
-card_detail = tk.Label(root, wraplength=290, justify=tk.LEFT, anchor='nw')
-card_detail.config(text='未能匹配到任何卡名。\n请确保卡名区域没有被遮挡。尤其是本界面不能遮挡住卡名区域，请先将本界面移动到屏幕右下角。\n如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup进行配置。请务必注意配置完成时应能够识别正确的卡名。')
+card_detail = tk.scrolledtext.ScrolledText(root, width=10000, height=10000)
+card_detail.insert(tk.INSERT, '''
+    未能匹配到任何卡名。
+    请确保卡名区域没有被遮挡。尤其是本界面不能遮挡住卡名区域，请先将本界面移动到屏幕右下角。
+    如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup进行配置。请务必注意配置完成时应能够识别正确的卡名。''')
+card_detail.config(state=tk.DISABLED)
 card_detail.pack()
 
 cardname_buffer = ''
@@ -103,7 +108,11 @@ def update_card_detail():
             sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
             res1 = cursor1.execute(sql1).fetchall()
             if len(res1) == 1:
-                card_detail.config(text='{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
+                card_detail.config(state=tk.NORMAL)
+                card_detail.delete('1.0', tk.END)
+                card_detail.insert(tk.INSERT, '{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
+                card_detail.config(state=tk.DISABLED)
+                
     root.after(50, update_card_detail)
 
 update_card_detail()
