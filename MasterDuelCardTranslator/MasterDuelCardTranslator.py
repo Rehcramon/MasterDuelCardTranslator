@@ -34,6 +34,7 @@ print('正在启动Master Duel Card Translator……')
 try:
     settings_file = open('settings.json', 'r')
     settings = json.loads(settings_file.readline())
+    settings_file.close()
     position = settings['position']
 except:
     print('未能读取到所识别的文本在屏幕当中的位置设置，请先执行MDCT_PositionSetup再执行本程序。')
@@ -54,6 +55,16 @@ root.geometry(settings['geometry'])
 root.resizable(True, True)
 root.attributes('-topmost', True)
 root.update()
+
+def update_geometry(event):
+    settings['geometry'] = root.geometry(None)
+    settings_file = open('settings.json', 'w')
+    settings_string = json.dumps(settings)
+    settings_file.write(settings_string)
+    settings_file.close()
+    
+root.bind('<Configure>', update_geometry)
+
 card_detail = tk.scrolledtext.ScrolledText(root, width=10000, height=10000, font=settings['font'])
 card_detail.insert(tk.INSERT, '''
     未能匹配到任何卡名。
