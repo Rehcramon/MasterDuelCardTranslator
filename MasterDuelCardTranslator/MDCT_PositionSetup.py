@@ -74,7 +74,7 @@ settings_file.close()
 pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
 cardname = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng', config='--psm 7')[:-1]
 
-print('当前所识别的卡名为“{}”。'.format(cardname))
+print('\n\n当前所识别的卡名为“{}”。'.format(cardname))
 print('如果卡名正确（如果卡名只有第1个字符和/或最后1个字符不正确，也可认为是正确的），建议关闭本程序后启动Master Duel Card Translator以查看效果。')
 print('如果卡名不正确，请重启本程序重新配置。')
 print('\n如果一直都无法配置成功，请记录下({}, {})与({}, {})这两个数据，连同MDCT文件夹中screenshot.png图片一起反馈。\n'.format(
