@@ -53,14 +53,17 @@ if width <= 0 or height <= 0:
     input('选择区域失败，请关闭并重启本程序。')
     quit()
 
-settings = {
-    'position': {
-        'x': left_top_pos[0],
-        'y': left_top_pos[1],
-        'w': width,
-        'h': height
-    }
+position = {
+    'x': left_top_pos[0],
+    'y': left_top_pos[1],
+    'w': width,
+    'h': height
 }
+
+settings_file = open('settings.json', 'r')
+settings = json.loads(settings_file.readline())
+settings['position'] = position
+settings['geometry'] = '300x250+{}+{}'.format(position['x'], position['y'] + position['h'] + 20)
 
 settings_string = json.dumps(settings)
 
