@@ -54,7 +54,7 @@ root.geometry(settings['geometry'])
 root.resizable(True, True)
 root.attributes('-topmost', True)
 root.update()
-card_detail = tk.scrolledtext.ScrolledText(root, width=10000, height=10000)
+card_detail = tk.scrolledtext.ScrolledText(root, width=10000, height=10000, font=settings['font'])
 card_detail.insert(tk.INSERT, '''
     未能匹配到任何卡名。
     请确保卡名区域没有被遮挡。尤其是本界面不能遮挡住卡名区域，请先将本界面移动到屏幕右下角。
