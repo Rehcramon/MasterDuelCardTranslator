@@ -75,10 +75,12 @@ card_detail.pack()
 
 cardname_buffer = ''
 cardname_buffer_status = False
+current_card_id = 0
 
 def update_card_detail():
     global cardname_buffer
     global cardname_buffer_status
+    global current_card_id
     pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
     cardname = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng', config='--psm 7')[:-1]
     if len(cardname) >= 1:
@@ -116,13 +118,15 @@ def update_card_detail():
         if len(res) == 1:
             cardname_buffer = ''
             cardname_buffer_status = False
-            sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
-            res1 = cursor1.execute(sql1).fetchall()
-            if len(res1) == 1:
-                card_detail.config(state=tk.NORMAL)
-                card_detail.delete('1.0', tk.END)
-                card_detail.insert(tk.INSERT, '{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
-                card_detail.config(state=tk.DISABLED)
+            if current_card_id != res[0][0]:
+                current_card_id = res[0][0]
+                sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
+                res1 = cursor1.execute(sql1).fetchall()
+                if len(res1) == 1:
+                    card_detail.config(state=tk.NORMAL)
+                    card_detail.delete('1.0', tk.END)
+                    card_detail.insert(tk.INSERT, '{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
+                    card_detail.config(state=tk.DISABLED)
                 
     root.after(50, update_card_detail)
 
