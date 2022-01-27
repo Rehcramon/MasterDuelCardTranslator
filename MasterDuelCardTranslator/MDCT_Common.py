@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-VERSION = '0.2'
+VERSION = '0.3'
 
 SHORT_TITLE = 'MDCT v{}'.format(VERSION)
 
