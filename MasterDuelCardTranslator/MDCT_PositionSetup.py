@@ -62,6 +62,7 @@ position = {
 
 settings_file = open('settings.json', 'r')
 settings = json.loads(settings_file.readline())
+settings_file.close()
 settings['position'] = position
 settings['geometry'] = '300x250+{}+{}'.format(position['x'], position['y'] + position['h'] + 20)
 
