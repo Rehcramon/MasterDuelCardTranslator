@@ -27,19 +27,13 @@ import pytesseract
 
 import MDCT_Common
 
-MDCT_Common.print_info()
-
-print('正在启动Master Duel Card Translator……')
-
 try:
     settings_file = open('settings.json', 'r')
     settings = json.loads(settings_file.readline())
     settings_file.close()
     position = settings['position']
 except:
-    print('未能读取到所识别的文本在屏幕当中的位置设置，请先执行MDCT_PositionSetup再执行本程序。')
-    print('请关闭本程序。')
-    input()
+    pyautogui.alert('请先执行MDCT_PositionSetup，确保配置正确后再执行本程序。', MDCT_Common.SHORT_TITLE)
     raise
 
 con = sqlite3.connect('name_and_id.db')
