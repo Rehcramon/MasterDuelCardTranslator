@@ -155,7 +155,6 @@ try:
         # global cardname_buffer_status
         # global current_card_id
 
-        print(CDPU.openThread())
         if(CDPU.openThread()):
             T = threading.Thread(target=getCardDetail)
             # T.setDaemon(True)
