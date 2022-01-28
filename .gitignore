@@ -1,1 +1,9 @@
 .vs
+.idea
+
+MasterDuelCardTranslator/__pycache__
+MasterDuelCardTranslator/exception.txt
+MasterDuelCardTranslator/screenshot.png
+MasterDuelCardTranslator/name_and_id.db
+MasterDuelCardTranslator/ygocore.cdb
+MasterDuelCardTranslator/settings.json
