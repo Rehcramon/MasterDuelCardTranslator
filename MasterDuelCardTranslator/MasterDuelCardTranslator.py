@@ -20,6 +20,8 @@ import traceback
 import sqlite3
 import tkinter as tk
 import tkinter.scrolledtext
+import threading
+import time
 
 import pyautogui
 from PIL import Image
@@ -27,6 +29,7 @@ from PIL import ImageOps
 import pytesseract
 
 import MDCT_Common
+import CardDetailProcessUtil as CDPU
 
 try:
 
@@ -39,12 +42,12 @@ try:
         pyautogui.alert('请先执行MDCT_PositionSetup，确保配置正确后再执行本程序。', MDCT_Common.SHORT_TITLE)
         raise
 
-    con = sqlite3.connect('name_and_id.db')
-    cursor = con.cursor()
-    cursor.execute('PRAGMA case_sensitive_like=ON;')
-
-    con1 = sqlite3.connect('ygocore.cdb')
-    cursor1 = con1.cursor()
+    # con = sqlite3.connect('name_and_id.db')
+    # cursor = con.cursor()
+    # cursor.execute('PRAGMA case_sensitive_like=ON;')
+    #
+    # con1 = sqlite3.connect('ygocore.cdb')
+    # cursor1 = con1.cursor()
 
     root = tk.Tk()
     root.title(MDCT_Common.SHORT_TITLE)
@@ -61,25 +64,39 @@ try:
         settings_file.close()
     
     root.bind('<Configure>', update_geometry)
+    CDPU.initUtil(tk.scrolledtext.ScrolledText(root, width=10000, height=10000, font=settings['font']))
 
-    card_detail = tk.scrolledtext.ScrolledText(root, width=10000, height=10000, font=settings['font'])
-    card_detail.insert(tk.INSERT, '''
-        未能匹配到任何卡名。
-        请确保卡名区域没有被遮挡。尤其是本界面不能遮挡住卡名区域，请先将本界面移动到屏幕右下角。
-        如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup进行配置。请务必注意配置完成时应能够识别正确的卡名。''')
-    card_detail.config(state=tk.DISABLED)
-    card_detail.pack()
+    # card_detail = tk.scrolledtext.ScrolledText(root, width=10000, height=10000, font=settings['font'])
+    # card_detail.insert(tk.INSERT, '''
+    #     未能匹配到任何卡名。
+    #     请确保卡名区域没有被遮挡。尤其是本界面不能遮挡住卡名区域，请先将本界面移动到屏幕右下角。
+    #     如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup进行配置。请务必注意配置完成时应能够识别正确的卡名。''')
+    # card_detail.config(state=tk.DISABLED)
+    # card_detail.pack()
 
     cardname_buffer = ''
     cardname_buffer_status = False
     current_card_id = 0
 
-    def update_card_detail():
-        global cardname_buffer
-        global cardname_buffer_status
-        global current_card_id
+    CDPU.setArgs(cardname_buffer, cardname_buffer_status, current_card_id)
+
+    def getCardDetail():
+        CDPU.setThreadStatus(True)
+
+        con = sqlite3.connect('name_and_id.db')
+        cursor = con.cursor()
+        cursor.execute('PRAGMA case_sensitive_like=ON;')
+
+        con1 = sqlite3.connect('ygocore.cdb')
+        cursor1 = con1.cursor()
+
+        cardname_buffer = CDPU.getCardname_buffer()
+        cardname_buffer_status = CDPU.getCardname_buffer_status()
+        current_card_id = CDPU.getCurrent_card_id()
+
         pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
-        cardname = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng', config='--psm 7')[:-1]
+        cardname = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng',
+                                               config='--psm 7')[:-1]
         if len(cardname) >= 1:
             sql = 'SELECT id, name FROM data WHERE name = "{}"'.format(cardname.replace('"', '""'))
             res = cursor.execute(sql).fetchall()
@@ -104,7 +121,8 @@ try:
                             cardname_buffer = cardname_buffer + cardname[j:]
                             break
                     if cardname_overlap_status == True:
-                        sql = 'SELECT id, name FROM data WHERE name LIKE "{}%"'.format(cardname_buffer.replace('"', '""'))
+                        sql = 'SELECT id, name FROM data WHERE name LIKE "{}%"'.format(
+                            cardname_buffer.replace('"', '""'))
                         res = cursor.execute(sql).fetchall()
                     else:
                         cardname_buffer = cardname_origin[:-1]
@@ -120,13 +138,30 @@ try:
                     sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
                     res1 = cursor1.execute(sql1).fetchall()
                     if len(res1) == 1:
-                        card_detail.config(state=tk.NORMAL)
-                        card_detail.delete('1.0', tk.END)
-                        card_detail.insert(tk.INSERT, '{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
-                        card_detail.config(state=tk.DISABLED)
-                
-        root.after(50, update_card_detail)
+                        CDPU.changeCardDetail(
+                            '{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
+                        # card_detail.config(state=tk.NORMAL)
+                        # card_detail.delete('1.0', tk.END)
+                        # card_detail.insert(tk.INSERT, '{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
+                        # card_detail.config(state=tk.DISABLED)
+        CDPU.setThreadStatus(False)
+        CDPU.setArgs(cardname_buffer, cardname_buffer_status, current_card_id)
+        # print(time.time() - startTimeNow)
+        con.close()
+        con1.close()
 
+    def update_card_detail():
+        # global cardname_buffer
+        # global cardname_buffer_status
+        # global current_card_id
+
+        print(CDPU.openThread())
+        if(CDPU.openThread()):
+            T = threading.Thread(target=getCardDetail)
+            # T.setDaemon(True)
+            T.start()
+
+        root.after(200, update_card_detail)
     update_card_detail()
     #quit_button = tk.Button(root, text='退出', command=root.destroy)
     #quit_button.pack()
