@@ -45,7 +45,7 @@ class CardDetailProcessUtil:
         CardDetailProcessUtil.__card.config(state=tk.DISABLED)
         CardDetailProcessUtil.__card.pack()
 
-        CardDetailProcessUtil.__LRUCache = Cache(200)
+        CardDetailProcessUtil.__LRUCache = Cache(300)
 
     @staticmethod
     def changeCardDetail(str):
