@@ -106,18 +106,19 @@ try:
         else:
             cardname = imgCache
 
+        cardname_origin = cardname
         # start to execute SQL
         if len(cardname) >= 1:
             sql = 'SELECT id, name FROM data WHERE name = "{}"'.format(cardname.replace('"', '""'))
             res = cursor.execute(sql).fetchall()
             if len(res) != 1 and len(cardname) >= 10:
+                CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname_origin)
                 sql = 'SELECT id, name FROM data WHERE name LIKE "{}%"'.format(cardname[:-1].replace('"', '""'))
                 res = cursor.execute(sql).fetchall()
             if len(res) != 1 and len(cardname) >= 10:
-                CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname)
+                CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname_origin)
                 if cardname_buffer_status == True:
                     cardname_overlap_status = True
-                    cardname_origin = cardname
                     cardname = cardname[1:-1]
                     for i in range(0, len(cardname_buffer) - 5):
                         cardname_overlap_status = True
@@ -151,7 +152,7 @@ try:
                     if len(res1) == 1:
                         CDPU.changeCardDetail(
                             '{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
-                        CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname)
+                        CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname_origin)
         CDPU.setThreadStatus(False)
         CDPU.setArgs(cardname_buffer, cardname_buffer_status, current_card_id)
         con.close()
