@@ -39,9 +39,9 @@ class CardDetailProcessUtil:
     def initUtil(card):
         CardDetailProcessUtil.__card = card
         CardDetailProcessUtil.__card.insert(tk.INSERT, '''
-                未能匹配到任何卡名。
-                请确保卡名区域没有被遮挡。尤其是本界面不能遮挡住卡名区域，请先将本界面移动到屏幕右下角。
-                如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup进行配置。请务必注意配置完成时应能够识别正确的卡名。''')
+　　未能匹配到任何卡名。
+　　请确保卡名区域没有被遮挡。尤其是本界面不能遮挡住卡名区域，请先将本界面移动到屏幕右下角。
+　　如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup进行配置。请务必注意配置完成时应能够识别正确的卡名。''')
         CardDetailProcessUtil.__card.config(state=tk.DISABLED)
         CardDetailProcessUtil.__card.pack()
 

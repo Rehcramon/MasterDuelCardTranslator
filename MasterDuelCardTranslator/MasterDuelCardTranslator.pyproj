@@ -21,6 +21,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CardDetailProcessUtil.py" />
     <Compile Include="MasterDuelCardTranslator.py" />
     <Compile Include="MDCT_PositionSetup.py">
       <SubType>Code</SubType>
