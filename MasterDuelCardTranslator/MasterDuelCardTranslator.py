@@ -103,7 +103,6 @@ try:
         imgCache = CDPU.getLRUCacheByKey(imgMD5)
         if (imgCache == None):
             cardname = pytesseract.image_to_string(screenshotInvertImg, lang='eng', config='--psm 7')[:-1]
-            CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname)
         else:
             cardname = imgCache
 
@@ -115,6 +114,7 @@ try:
                 sql = 'SELECT id, name FROM data WHERE name LIKE "{}%"'.format(cardname[:-1].replace('"', '""'))
                 res = cursor.execute(sql).fetchall()
             if len(res) != 1 and len(cardname) >= 10:
+                CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname)
                 if cardname_buffer_status == True:
                     cardname_overlap_status = True
                     cardname_origin = cardname
@@ -151,6 +151,7 @@ try:
                     if len(res1) == 1:
                         CDPU.changeCardDetail(
                             '{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
+                        CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname)
         CDPU.setThreadStatus(False)
         CDPU.setArgs(cardname_buffer, cardname_buffer_status, current_card_id)
         con.close()
