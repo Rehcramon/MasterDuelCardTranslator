@@ -1,5 +1,5 @@
 #    Master Duel Card Translator Project
-#    Copyright (C) 2022  Rehcramon
+#    Copyright (C) 2022  LLForever and Rehcramon
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ SHORT_TITLE = 'MDCT v{}'.format(VERSION)
 
 INFO = '''
     Master Duel Card Translator Project
-    Copyright (C) 2022  Rehcramon
+    Copyright (C) 2022  LLForever and Rehcramon
 
     This program comes with ABSOLUTELY NO WARRANTY.
     This is free software, and you are welcome to
