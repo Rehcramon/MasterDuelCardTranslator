@@ -1,4 +1,7 @@
 .vs
+MasterDuelCardTranslator.sln
+MasterDuelCardTranslator/MasterDuelCardTranslator.pyproj
+
 .idea
 
 MasterDuelCardTranslator/__pycache__
