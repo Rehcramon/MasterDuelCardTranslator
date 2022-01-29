@@ -95,8 +95,19 @@ try:
         current_card_id = CDPU.getCurrent_card_id()
 
         pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
-        cardname = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng',
-                                               config='--psm 7')[:-1]
+
+        # add LRU Cache Before OCR. Improved performance in most scenarios
+        screenshotImg = Image.open('screenshot.png')
+        screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
+        imgMD5 = CDPU.dhash(screenshotImg)
+        imgCache = CDPU.getLRUCacheByKey(imgMD5)
+        if (imgCache == None):
+            cardname = pytesseract.image_to_string(screenshotInvertImg, lang='eng', config='--psm 7')[:-1]
+            CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname)
+        else:
+            cardname = imgCache
+
+        # start to execute SQL
         if len(cardname) >= 1:
             sql = 'SELECT id, name FROM data WHERE name = "{}"'.format(cardname.replace('"', '""'))
             res = cursor.execute(sql).fetchall()
@@ -140,13 +151,8 @@ try:
                     if len(res1) == 1:
                         CDPU.changeCardDetail(
                             '{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
-                        # card_detail.config(state=tk.NORMAL)
-                        # card_detail.delete('1.0', tk.END)
-                        # card_detail.insert(tk.INSERT, '{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
-                        # card_detail.config(state=tk.DISABLED)
         CDPU.setThreadStatus(False)
         CDPU.setArgs(cardname_buffer, cardname_buffer_status, current_card_id)
-        # print(time.time() - startTimeNow)
         con.close()
         con1.close()
 
@@ -160,7 +166,7 @@ try:
             # T.setDaemon(True)
             T.start()
 
-        root.after(200, update_card_detail)
+        root.after(180, update_card_detail)
     update_card_detail()
     #quit_button = tk.Button(root, text='退出', command=root.destroy)
     #quit_button.pack()
