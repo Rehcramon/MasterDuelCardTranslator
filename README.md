@@ -1,6 +1,5 @@
 # Master Duel Card Translator Project
-A tool for translating card detail in Yu-Gi-Oh! Master Duel. Short for MDCT.
-Use OCR to recognize card names.
+A tool for translating card details in Yu-Gi-Oh! Master Duel. Short for MDCT. Use OCR to recognize text in cards.
 
 ## Quick Start
 1. Download the latest release.
