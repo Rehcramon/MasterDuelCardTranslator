@@ -46,8 +46,6 @@ class CardDetailProcessUtil:
     __card = None
     __threadExist = False
     __preDetailInfo = ''
-    cardname_buffer = None
-    cardname_buffer_status = None
     current_card_id = None
     __LRUCache = None
 
@@ -55,9 +53,9 @@ class CardDetailProcessUtil:
     def initUtil(card):
         CardDetailProcessUtil.__card = card
         CardDetailProcessUtil.__card.insert(tk.INSERT, '''
-　　未能匹配到任何卡名。
-　　请确保卡名区域没有被遮挡。尤其是本界面不能遮挡住卡名区域，请先将本界面移动到屏幕右下角。
-　　如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup进行配置。请务必注意配置完成时应能够识别正确的卡名。''')
+　　未能匹配到任何卡片。
+　　请确保卡片文本区域没有被遮挡。尤其是本界面不能遮挡住该区域，请先将本界面移动到屏幕右侧。
+　　如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup进行配置。请务必注意配置完成时应能够识别正确的卡片文本。''')
         CardDetailProcessUtil.__card.config(state=tk.DISABLED)
         CardDetailProcessUtil.__card.pack()
 
@@ -101,16 +99,8 @@ def openThread():
 def setThreadStatus(boolStatus):
     CardDetailProcessUtil.setThreadStatus(boolStatus)
 
-def setArgs(cardname_buffer, cardname_buffer_status, current_card_id):
-    CardDetailProcessUtil.cardname_buffer = cardname_buffer
-    CardDetailProcessUtil.cardname_buffer_status = cardname_buffer_status
+def setArgs(current_card_id):
     CardDetailProcessUtil.current_card_id = current_card_id
-
-def getCardname_buffer():
-    return CardDetailProcessUtil.cardname_buffer
-
-def getCardname_buffer_status():
-    return CardDetailProcessUtil.cardname_buffer_status
 
 def getCurrent_card_id():
     return CardDetailProcessUtil.current_card_id

@@ -42,12 +42,41 @@ try:
         pyautogui.alert('请先执行MDCT_PositionSetup，确保配置正确后再执行本程序。', MDCT_Common.SHORT_TITLE)
         raise
 
-    # con = sqlite3.connect('name_and_id.db')
-    # cursor = con.cursor()
-    # cursor.execute('PRAGMA case_sensitive_like=ON;')
-    #
-    # con1 = sqlite3.connect('ygocore.cdb')
-    # cursor1 = con1.cursor()
+    con = sqlite3.connect('source.cdb')
+    cursor = con.cursor()
+    res = cursor.execute('SELECT id, name, type, desc FROM data').fetchall()
+    con.close()
+
+    con = sqlite3.connect('search.db')
+    cursor = con.cursor()
+    cursor.execute('CREATE TABLE IF NOT EXISTS data (desc TEXT PRIMARY KEY, id INTEGER, name TEXT);')
+    cursor.execute('DELETE FROM data;')
+
+    source_card_desc_and_id = []
+
+    for source_card_info in res:
+        source_card_id = source_card_info[0]
+        source_card_name = source_card_info[1]
+        source_card_desc = (source_card_info[3] + '\r\n').replace('[ Monster Effect ]\r\n', '').replace('[ Flavor Text ]\r\n', '').replace('[ Pendulum Effect ]', '[Pendulum Effect]').replace('\r\n', '\n').replace('\n', ' ')
+        source_card_desc_list = source_card_desc.split('---------------------------------------- ')
+        if len(source_card_desc_list) == 1:
+            source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
+        elif len(source_card_desc_list) == 2:
+            source_card_desc = source_card_desc_list[0] + source_card_desc_list[1]
+            source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
+            source_card_desc = source_card_desc_list[1] + source_card_desc_list[0]
+            source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
+        else:
+            raise Exception('Invalid card text of id = {}'.format(source_card_id))
+
+    for source_card_info in source_card_desc_and_id:
+        sql = 'INSERT INTO data VALUES ("{}", {}, "{}");'.format(source_card_info[0].replace('"', '""'), source_card_info[1], source_card_info[2].replace('"', '""'))
+        try:
+            cursor.execute(sql)
+        except:
+            pass
+    con.commit()
+    con.close()
 
     root = tk.Tk()
     root.title(MDCT_Common.SHORT_TITLE)
@@ -66,32 +95,19 @@ try:
     root.bind('<Configure>', update_geometry)
     CDPU.initUtil(tk.scrolledtext.ScrolledText(root, width=10000, height=10000, font=settings['font']))
 
-    # card_detail = tk.scrolledtext.ScrolledText(root, width=10000, height=10000, font=settings['font'])
-    # card_detail.insert(tk.INSERT, '''
-    #     未能匹配到任何卡名。
-    #     请确保卡名区域没有被遮挡。尤其是本界面不能遮挡住卡名区域，请先将本界面移动到屏幕右下角。
-    #     如果长时间仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup进行配置。请务必注意配置完成时应能够识别正确的卡名。''')
-    # card_detail.config(state=tk.DISABLED)
-    # card_detail.pack()
-
-    cardname_buffer = ''
-    cardname_buffer_status = False
     current_card_id = 0
 
-    CDPU.setArgs(cardname_buffer, cardname_buffer_status, current_card_id)
+    CDPU.setArgs(current_card_id)
 
     def getCardDetail():
         CDPU.setThreadStatus(True)
 
-        con = sqlite3.connect('name_and_id.db')
+        con = sqlite3.connect('search.db')
         cursor = con.cursor()
-        cursor.execute('PRAGMA case_sensitive_like=ON;')
 
         con1 = sqlite3.connect('ygocore.cdb')
         cursor1 = con1.cursor()
 
-        cardname_buffer = CDPU.getCardname_buffer()
-        cardname_buffer_status = CDPU.getCardname_buffer_status()
         current_card_id = CDPU.getCurrent_card_id()
 
         pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
@@ -102,59 +118,31 @@ try:
         imgMD5 = CDPU.dhash(screenshotImg)
         imgCache = CDPU.getLRUCacheByKey(imgMD5)
         if (imgCache == None):
-            cardname = pytesseract.image_to_string(screenshotInvertImg, lang='eng', config='--psm 7')[:-1]
+            card_desc = pytesseract.image_to_string(screenshotInvertImg, lang='eng')
+            card_desc = card_desc.replace(' ', '').replace('"', '""')
         else:
-            cardname = imgCache
+            card_desc = imgCache
 
-        cardname_origin = cardname
-        # start to execute SQL
-        if len(cardname) >= 1:
-            sql = 'SELECT id, name FROM data WHERE name = "{}"'.format(cardname.replace('"', '""'))
-            res = cursor.execute(sql).fetchall()
-            if len(res) != 1 and len(cardname) >= 10:
-                CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname_origin)
-                sql = 'SELECT id, name FROM data WHERE name LIKE "{}%"'.format(cardname[:-1].replace('"', '""'))
+        if len(card_desc) >= 10:
+            CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), card_desc)
+
+            card_desc_work_list = card_desc.split('\n')
+            card_desc_work = ''
+            for card_desc_line in card_desc_work_list:
+                card_desc_work += card_desc_line
+                sql = 'SELECT id, name FROM data WHERE desc LIKE "{}%"'.format(card_desc_work)
                 res = cursor.execute(sql).fetchall()
-            if len(res) != 1 and len(cardname) >= 10:
-                CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname_origin)
-                if cardname_buffer_status == True:
-                    cardname_overlap_status = True
-                    cardname = cardname[1:-1]
-                    for i in range(0, len(cardname_buffer) - 5):
-                        cardname_overlap_status = True
-                        j = 0
-                        while i + j < len(cardname_buffer) and j < len(cardname):
-                            if cardname_buffer[i + j] == cardname[j]:
-                                j += 1
-                            else:
-                                cardname_overlap_status = False
-                                break
-                        if cardname_overlap_status == True and j < len(cardname):
-                            cardname_buffer = cardname_buffer + cardname[j:]
-                            break
-                    if cardname_overlap_status == True:
-                        sql = 'SELECT id, name FROM data WHERE name LIKE "{}%"'.format(
-                            cardname_buffer.replace('"', '""'))
-                        res = cursor.execute(sql).fetchall()
-                    else:
-                        cardname_buffer = cardname_origin[:-1]
-                        cardname_buffer_status = True
-                else:
-                    cardname_buffer = cardname[:-1]
-                    cardname_buffer_status = True
-            if len(res) == 1:
-                cardname_buffer = ''
-                cardname_buffer_status = False
-                if current_card_id != res[0][0]:
-                    current_card_id = res[0][0]
-                    sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
-                    res1 = cursor1.execute(sql1).fetchall()
-                    if len(res1) == 1:
-                        CDPU.changeCardDetail(
-                            '{} ({})\n\n{}'.format(res1[0][0], res[0][1], res1[0][1].replace('\r', '')))
-                        CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), cardname_origin)
+                if len(res) == 1:
+                    if res[0][0] != current_card_id:
+                        current_card_id = res[0][0]
+                        sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
+                        res1 = cursor1.execute(sql1).fetchall()
+                        if len(res1) == 1:
+                            CDPU.changeCardDetail(
+                                '{}\n{}\n\n{}'.format(res1[0][0], res[0][1], res1[0][1]))
+                    break
         CDPU.setThreadStatus(False)
-        CDPU.setArgs(cardname_buffer, cardname_buffer_status, current_card_id)
+        CDPU.setArgs(current_card_id)
         con.close()
         con1.close()
 
