@@ -159,7 +159,6 @@ try:
                     else:
                         card_name = imgCache
                     if len(card_name) >= 3:
-                        print(card_name)
                         sql = 'SELECT id, name FROM data WHERE name = "{}"'.format(card_name.replace('"', '""'))
                         res = cursor.execute(sql).fetchall()
                         if len(res) != 1 and len(card_name) >= 10:
@@ -184,19 +183,12 @@ try:
         con1.close()
 
     def update_card_detail():
-        # global cardname_buffer
-        # global cardname_buffer_status
-        # global current_card_id
-
         if(CDPU.openThread()):
             T = threading.Thread(target=getCardDetail)
-            # T.setDaemon(True)
             T.start()
 
         root.after(180, update_card_detail)
     update_card_detail()
-    #quit_button = tk.Button(root, text='退出', command=root.destroy)
-    #quit_button.pack()
 
     root.mainloop()
 
