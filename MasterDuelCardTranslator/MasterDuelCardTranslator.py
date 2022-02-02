@@ -21,7 +21,6 @@ import sqlite3
 import tkinter as tk
 import tkinter.scrolledtext
 import threading
-import time
 
 import pyautogui
 from PIL import Image
@@ -49,7 +48,7 @@ try:
 
     con = sqlite3.connect('search.db')
     cursor = con.cursor()
-    cursor.execute('CREATE TABLE IF NOT EXISTS data (desc TEXT PRIMARY KEY, id INTEGER, name TEXT);')
+    cursor.execute('CREATE TABLE IF NOT EXISTS data (desc TEXT PRIMARY KEY, id INTEGER, name TEXT UNIQUE);')
     cursor.execute('DELETE FROM data;')
 
     source_card_desc_and_id = []
@@ -104,6 +103,7 @@ try:
 
         con = sqlite3.connect('search.db')
         cursor = con.cursor()
+        cursor.execute('PRAGMA case_sensitive_like=ON;')
 
         con1 = sqlite3.connect('ygocore.cdb')
         cursor1 = con1.cursor()
@@ -114,10 +114,10 @@ try:
 
         # add LRU Cache Before OCR. Improved performance in most scenarios
         screenshotImg = Image.open('screenshot.png')
-        screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
         imgMD5 = CDPU.dhash(screenshotImg)
         imgCache = CDPU.getLRUCacheByKey(imgMD5)
         if (imgCache == None):
+            screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
             card_desc = pytesseract.image_to_string(screenshotInvertImg, lang='eng')
             card_desc = card_desc.replace(' ', '').replace('"', '""')
         else:
@@ -127,20 +127,57 @@ try:
             CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), card_desc)
 
             card_desc_work_list = card_desc.split('\n')
-            card_desc_work = ''
-            for card_desc_line in card_desc_work_list:
-                card_desc_work += card_desc_line
-                sql = 'SELECT id, name FROM data WHERE desc LIKE "{}%"'.format(card_desc_work)
-                res = cursor.execute(sql).fetchall()
-                if len(res) == 1:
-                    if res[0][0] != current_card_id:
-                        current_card_id = res[0][0]
-                        sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
-                        res1 = cursor1.execute(sql1).fetchall()
-                        if len(res1) == 1:
-                            CDPU.changeCardDetail(
-                                '{}\n{}\n\n{}'.format(res1[0][0], res[0][1], res1[0][1]))
+            card_desc_found = False
+            card_desc_work_exchange_buffer = ''
+            for i in range(len(card_desc_work_list)):
+                card_desc_work = ''
+                for card_desc_line in card_desc_work_list:
+                    card_desc_work += card_desc_line
+                    sql = 'SELECT id, name FROM data WHERE desc LIKE "{}%"'.format(card_desc_work)
+                    res = cursor.execute(sql).fetchall()
+                    if len(res) == 1:
+                        if res[0][0] != current_card_id:
+                            current_card_id = res[0][0]
+                            sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
+                            res1 = cursor1.execute(sql1).fetchall()
+                            if len(res1) == 1:
+                                CDPU.changeCardDetail(
+                                    '{}\n{}\n\n{}'.format(res1[0][0], res[0][1], res1[0][1]))
+                        card_desc_found = True
+                        break
+                if card_desc_found == True:
                     break
+                elif i == 0:
+                    pyautogui.screenshot('screenshot.png', region=(position['nx'], position['ny'], position['nw'], position['nh']))
+                    # add LRU Cache Before OCR. Improved performance in most scenarios
+                    screenshotImg = Image.open('screenshot.png')
+                    imgMD5 = CDPU.dhash(screenshotImg)
+                    imgCache = CDPU.getLRUCacheByKey(imgMD5)
+                    if (imgCache == None):
+                        screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
+                        card_name = pytesseract.image_to_string(screenshotInvertImg, lang='eng', config='--psm 7')[:-1]
+                    else:
+                        card_name = imgCache
+                    if len(card_name) >= 3:
+                        print(card_name)
+                        sql = 'SELECT id, name FROM data WHERE name = "{}"'.format(card_name.replace('"', '""'))
+                        res = cursor.execute(sql).fetchall()
+                        if len(res) != 1 and len(card_name) >= 10:
+                            sql = 'SELECT id, name FROM data WHERE name LIKE "%{}%"'.format(card_name[1:-1].replace('"', '""'))
+                            res = cursor.execute(sql).fetchall()
+                        if len(res) == 1:
+                            if res[0][0] != current_card_id:
+                                current_card_id = res[0][0]
+                                sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
+                                res1 = cursor1.execute(sql1).fetchall()
+                                if len(res1) == 1:
+                                    CDPU.changeCardDetail(
+                                        '{}\n{}\n\n{}'.format(res1[0][0], res[0][1], res1[0][1]))
+                            break
+                if i > 0:
+                    card_desc_work_list[i - 1] = card_desc_work_exchange_buffer
+                card_desc_work_exchange_buffer = card_desc_work_list[i]
+                card_desc_work_list[i] = '%'
         CDPU.setThreadStatus(False)
         CDPU.setArgs(current_card_id)
         con.close()
