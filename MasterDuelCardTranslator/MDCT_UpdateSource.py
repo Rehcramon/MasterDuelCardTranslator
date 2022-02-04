@@ -28,7 +28,7 @@ print('\n')
 
 con = sqlite3.connect('source.cdb')
 cursor = con.cursor()
-cursor.execute('CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, name TEXT, type TEXT, desc TEXT);')
+cursor.execute('CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, name TEXT UNIQUE, type TEXT, desc TEXT);')
 
 print('请稍候。正在进行：访问网络，下载英文卡片数据。')
 

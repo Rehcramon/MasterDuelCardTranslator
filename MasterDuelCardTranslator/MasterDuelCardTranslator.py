@@ -65,6 +65,9 @@ try:
     def getCardDetail():
         CDPU.setThreadStatus(True)
 
+        con_source = sqlite3.connect('source.cdb')
+        cursor_source = con_source.cursor()
+
         con = sqlite3.connect('search.db')
         cursor = con.cursor()
         cursor.execute('PRAGMA case_sensitive_like=ON;')
@@ -123,11 +126,11 @@ try:
                     else:
                         card_name = imgCache
                     if len(card_name) >= 3:
-                        sql = 'SELECT id, name FROM data WHERE name = "{}"'.format(card_name.replace('"', '""'))
-                        res = cursor.execute(sql).fetchall()
+                        sql_source = 'SELECT id, name FROM data WHERE name = "{}"'.format(card_name.replace('"', '""'))
+                        res = cursor_source.execute(sql_source).fetchall()
                         if len(res) != 1 and len(card_name) >= 10:
-                            sql = 'SELECT id, name FROM data WHERE name LIKE "%{}%"'.format(card_name[1:-1].replace('"', '""'))
-                            res = cursor.execute(sql).fetchall()
+                            sql_source = 'SELECT id, name FROM data WHERE name LIKE "%{}%"'.format(card_name[1:-1].replace('"', '""'))
+                            res = cursor_source.execute(sql_source).fetchall()
                         if len(res) == 1:
                             if res[0][0] != current_card_id:
                                 current_card_id = res[0][0]
@@ -143,6 +146,7 @@ try:
                 card_desc_work_list[i] = '%'
         CDPU.setThreadStatus(False)
         CDPU.setArgs(current_card_id)
+        con_source.close()
         con.close()
         con1.close()
 
