@@ -41,42 +41,6 @@ try:
         pyautogui.alert('请先执行MDCT_PositionSetup，确保配置正确后再执行本程序。', MDCT_Common.SHORT_TITLE)
         raise
 
-    con = sqlite3.connect('source.cdb')
-    cursor = con.cursor()
-    res = cursor.execute('SELECT id, name, type, desc FROM data').fetchall()
-    con.close()
-
-    con = sqlite3.connect('search.db')
-    cursor = con.cursor()
-    cursor.execute('CREATE TABLE IF NOT EXISTS data (desc TEXT PRIMARY KEY, id INTEGER, name TEXT UNIQUE);')
-    cursor.execute('DELETE FROM data;')
-
-    source_card_desc_and_id = []
-
-    for source_card_info in res:
-        source_card_id = source_card_info[0]
-        source_card_name = source_card_info[1]
-        source_card_desc = (source_card_info[3] + '\r\n').replace('[ Monster Effect ]\r\n', '').replace('[ Flavor Text ]\r\n', '').replace('[ Pendulum Effect ]', '[Pendulum Effect]').replace('\r\n', '\n').replace('\n', ' ')
-        source_card_desc_list = source_card_desc.split('---------------------------------------- ')
-        if len(source_card_desc_list) == 1:
-            source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
-        elif len(source_card_desc_list) == 2:
-            source_card_desc = source_card_desc_list[0] + source_card_desc_list[1]
-            source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
-            source_card_desc = source_card_desc_list[1] + source_card_desc_list[0]
-            source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
-        else:
-            raise Exception('Invalid card text of id = {}'.format(source_card_id))
-
-    for source_card_info in source_card_desc_and_id:
-        sql = 'INSERT INTO data VALUES ("{}", {}, "{}");'.format(source_card_info[0].replace('"', '""'), source_card_info[1], source_card_info[2].replace('"', '""'))
-        try:
-            cursor.execute(sql)
-        except:
-            pass
-    con.commit()
-    con.close()
-
     root = tk.Tk()
     root.title(MDCT_Common.SHORT_TITLE)
     root.geometry(settings['geometry'])
