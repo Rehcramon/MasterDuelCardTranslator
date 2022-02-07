@@ -12,11 +12,11 @@ A tool for translating card details in Yu-Gi-Oh! Master Duel. Short for MDCT. Us
 1. Install Tesseract executable. Add it to `PATH` (the environment variable).
 2. Install `pyautogui` and `pytesseract` by `pip`.
 3. Run `MDCT_UpdateSource.py` to create the database of names.
-4. Copy the latest `cards.cdb` file from YGOPro. Rename it to `ygocore.cdb`.
+4. Choose one: Run `MDCT_UpdateTarget.py`; or copy the latest `cards.cdb` file from YGOPro and rename it to `ygocore.cdb`.
 5. Duplicate `_settings.json` and rename it to `settings.json`.
 6. Run `MDCT_PositionSetup.py`. This is the last step to configure MDCT.
 7. Run `MasterDuelCardTranslator.py`. Please enjoy.
 
 ## Update Databases
 1. Run `MDCT_UpdateSource.exe` (or `.py`) to update the database of names.
-2. Copy the latest `cards.cdb` file from YGOPro. Rename it to `ygocore.cdb`.
+2. Choose one: Run `MDCT_UpdateTarget.exe` (or `.py`); or copy the latest `cards.cdb` file from YGOPro and rename it to `ygocore.cdb`.
