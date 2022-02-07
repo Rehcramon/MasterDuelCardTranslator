@@ -16,12 +16,13 @@
 
 import requests
 import sqlite3
+import json
 
 import MDCT_Common
 
 MDCT_Common.print_info()
 
-print('正在更新英文卡片数据。翻译数据请手动更新。本次更新可能需要若干分钟。')
+print('正在更新英文卡片数据。本次更新可能需要若干分钟。')
 print('英文卡片数据来源：https://db.ygoprodeck.com/api/v7/cardinfo.php')
 print('请参考：https://db.ygoprodeck.com/api-guide/')
 print('\n')
@@ -30,15 +31,18 @@ con = sqlite3.connect('source.cdb')
 cursor = con.cursor()
 cursor.execute('CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, name TEXT UNIQUE, type TEXT, desc TEXT);')
 
-print('请稍候。正在进行：访问网络，下载英文卡片数据。')
+print('请稍候。正在进行：[1/3]访问网络，下载英文卡片数据。')
 
 db = requests.get('https://db.ygoprodeck.com/api/v7/cardinfo.php')
 data_list = db.json()['data']
 
 if len(data_list) > 10000:
-    print('请稍候。正在进行：保存英文卡片数据。')
+    print('请稍候。正在进行：[2/3]保存英文卡片数据。')
+    data_list_overwrite_file = open('source_overwrite.json', 'r')
+    data_list_overwrite = json.loads(' '.join(data_list_overwrite_file.readlines()))
+    data_list_overwrite_file.close()
+    data_list = data_list_overwrite + data_list
     cursor.execute('DELETE FROM data;')
-    i = 0
     for data in data_list:
         sql = 'INSERT INTO data VALUES ({}, "{}", "{}", "{}");'.format(
             data['id'], 
@@ -46,8 +50,10 @@ if len(data_list) > 10000:
             data['type'].replace('"', '""'), 
             data['desc'].replace('"', '""')
         )
-        cursor.execute(sql)
-        i += 1
+        try:
+            cursor.execute(sql)
+        except:
+            pass
 else:
     raise Exception('The number of cards does NOT seem right.')
 
@@ -58,7 +64,7 @@ res = cursor.execute('SELECT id, name, type, desc FROM data').fetchall()
 cursor.close()
 con.close()
 
-print('请稍候。正在进行：优化卡片文本数据。')
+print('请稍候。正在进行：[3/3]优化卡片文本数据。')
 
 con = sqlite3.connect('search.db')
 cursor = con.cursor()
