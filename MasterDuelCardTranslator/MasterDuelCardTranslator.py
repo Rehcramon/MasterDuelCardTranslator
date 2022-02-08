@@ -28,7 +28,7 @@ from PIL import ImageOps
 import pytesseract
 
 import MDCT_Common
-import CardDetailProcessUtil as CDPU
+import MDCT_CardDetailProcessUtil as CDPU
 import MDCT_TargetParser
 
 try:
