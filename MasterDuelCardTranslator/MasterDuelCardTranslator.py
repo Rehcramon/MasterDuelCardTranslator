@@ -29,6 +29,7 @@ import pytesseract
 
 import MDCT_Common
 import CardDetailProcessUtil as CDPU
+import MDCT_TargetParser
 
 try:
 
@@ -108,8 +109,11 @@ try:
                             sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
                             res1 = cursor1.execute(sql1).fetchall()
                             if len(res1) == 1:
+                                sql_target_data = 'SELECT id, ot, alias, setcode, type, atk, def, level, race, attribute, category FROM datas WHERE id = {} LIMIT 1'.format(res[0][0])
+                                res_target_data = cursor1.execute(sql_target_data).fetchall()
+                                card_data_string = MDCT_TargetParser.get_card_data_string(res_target_data[0])
                                 CDPU.changeCardDetail(
-                                    '{}\n{}\n\n{}'.format(res1[0][0], res[0][1], res1[0][1]))
+                                    '{}\n{}\n{}\n{}'.format(res1[0][0], res[0][1], card_data_string, res1[0][1]))
                         card_desc_found = True
                         break
                 if card_desc_found == True:
@@ -137,8 +141,11 @@ try:
                                 sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
                                 res1 = cursor1.execute(sql1).fetchall()
                                 if len(res1) == 1:
+                                    sql_target_data = 'SELECT id, ot, alias, setcode, type, atk, def, level, race, attribute, category FROM datas WHERE id = {} LIMIT 1'.format(res[0][0])
+                                    res_target_data = cursor1.execute(sql_target_data).fetchall()
+                                    card_data_string = MDCT_TargetParser.get_card_data_string(res_target_data[0])
                                     CDPU.changeCardDetail(
-                                        '{}\n{}\n\n{}'.format(res1[0][0], res[0][1], res1[0][1]))
+                                        '{}\n{}\n{}\n{}'.format(res1[0][0], res[0][1], card_data_string, res1[0][1]))
                             break
                 if i > 0:
                     card_desc_work_list[i - 1] = card_desc_work_exchange_buffer
