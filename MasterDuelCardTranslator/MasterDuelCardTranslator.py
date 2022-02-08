@@ -68,10 +68,10 @@ try:
 
         con_source = sqlite3.connect('source.cdb')
         cursor_source = con_source.cursor()
+        cursor_source.execute('PRAGMA case_sensitive_like=ON;')
 
         con = sqlite3.connect('search.db')
         cursor = con.cursor()
-        cursor.execute('PRAGMA case_sensitive_like=ON;')
 
         con1 = sqlite3.connect('ygocore.cdb')
         cursor1 = con1.cursor()
