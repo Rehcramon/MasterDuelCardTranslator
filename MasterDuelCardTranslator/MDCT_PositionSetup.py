@@ -1,5 +1,5 @@
 #    Master Duel Card Translator Project
-#    Copyright (C) 2022  LLForever and Rehcramon
+#    Copyright (C) 2022  Rehcramon and LLForever
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -29,14 +29,12 @@ welcome_message = '''
 欢迎使用Master Duel Card Translator。
 现在正在选择所需要识别的文本区域。请按照以下步骤完成。
 1. 确保Yu-Gi-Oh! Master Duel所显示的语言是英语；
-2. 启动Yu-Gi-Oh! Master Duel，进入单人模式（Solo）的任意决斗，之后选择一张卡片*，让屏幕左侧出现卡片的信息；
+2. 启动Yu-Gi-Oh! Master Duel，进入单人模式（Solo）的任意决斗，之后选择一张卡片，让屏幕左侧出现卡片的信息；
 3. 回到本界面，并将本界面移动到不会遮挡到卡片文本的位置，准备好之后按下回车；
 4. 将鼠标移动到卡片名称的文字区域的左上角（大约在灰色三角形右下方稍偏上的位置），按下回车；
 5. 将鼠标移动到卡片名称的文字区域的右下角（大约在属性的左下方稍偏左上的位置），按下回车；
 6. 将鼠标移动到卡片文本的文字区域的左上角（大约在第一个字符左上角的位置），按下回车；
 7. 将鼠标移动到卡片文本的文字区域的右下角（大约在滚动栏左下角的位置），按下回车。
-
-* 请尽量选择一张卡片本文较长的卡片，从而让游戏内的滚动栏显示出来。
 
 请务必注意，本次配置之中需要按下5次回车，需要移动4次鼠标到特定的位置。
 它们的顺序是：按下回车、移动鼠标、按下回车、移动鼠标、按下回车、移动鼠标、按下回车、移动鼠标、按下回车。
@@ -56,7 +54,7 @@ height = right_bottom_pos[1] - left_top_pos[1]
 if width <= 0 or height <= 0:
     print('选择的区域不是合法的矩形。')
     input('选择区域失败，请关闭并重启本程序。')
-    quit()
+    raise Exception('Invalid area.')
 
 nx = left_top_pos[0]
 ny = left_top_pos[1]
@@ -72,7 +70,7 @@ print('如果卡名不正确，请重启本程序重新配置。\n')
 
 input('正在进行 6. 将鼠标移动到卡片文本的文字区域的左上角（大约在第一个字符左上角的位置），按下回车。')
 left_top_pos = pyautogui.position()
-input('正在进行 7. 将鼠标移动到卡片文本的文字区域的右下角（大约在滚动栏左下角的位置），按下回车。')
+input('正在进行 7. 将鼠标移动到卡片文本的文字区域的右下角（大约在灰色三角形左下角的位置），按下回车。')
 right_bottom_pos = pyautogui.position()
 
 width = right_bottom_pos[0] - left_top_pos[0]
@@ -81,7 +79,7 @@ height = right_bottom_pos[1] - left_top_pos[1]
 if width <= 0 or height <= 0:
     print('选择的区域不是合法的矩形。')
     input('选择区域失败，请关闭并重启本程序。')
-    quit()
+    raise Exception('Invalid area.')
 
 position = {
     'x': left_top_pos[0],
@@ -98,13 +96,9 @@ settings_file = open('settings.json', 'r')
 settings = json.loads(settings_file.readline())
 settings_file.close()
 settings['position'] = position
-settings['geometry'] = '300x250+{}+{}'.format(position['x'] + position['w'] + 20, position['y'])
+settings['geometry'] = '300x550+{}+{}'.format(max(position['x'] + position['w'], position['nx'] + position['nw']) + 20, position['ny'])
 
-settings_string = json.dumps(settings)
-
-settings_file = open('settings.json', 'w')
-settings_file.write(settings_string)
-settings_file.close()
+MDCT_Common.save_settings(settings)
 
 pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
 card_desc = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng')

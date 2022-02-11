@@ -1,5 +1,5 @@
 #    Master Duel Card Translator Project
-#    Copyright (C) 2022  LLForever and Rehcramon
+#    Copyright (C) 2022  Rehcramon and LLForever
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ import traceback
 import sqlite3
 import tkinter as tk
 import tkinter.scrolledtext
+import tkinter.messagebox
 import threading
 
 import pyautogui
@@ -51,13 +52,44 @@ try:
 
     def update_geometry(event):
         settings['geometry'] = root.geometry(None)
-        settings_file = open('settings.json', 'w')
-        settings_string = json.dumps(settings)
-        settings_file.write(settings_string)
-        settings_file.close()
+        MDCT_Common.save_settings(settings)
     
     root.bind('<Configure>', update_geometry)
-    CDPU.initUtil(tk.scrolledtext.ScrolledText(root, width=10000, height=10000, font=settings['font']))
+
+    def show_about_dialog():
+        tk.messagebox.showinfo(message=MDCT_Common.INFO, title='关于 '+MDCT_Common.SHORT_TITLE)
+
+    about_button = tk.Button(root, text='关于 '+MDCT_Common.SHORT_TITLE, command=show_about_dialog)
+    about_button.pack(fill=tk.X)
+
+    card_display_text = tk.scrolledtext.ScrolledText(root, width=1, height=1, font=settings['font'])
+    CDPU.initUtil(card_display_text)
+
+    def font_minus():
+        font_string_array = settings['font'].split(' ')
+        font_size = int(font_string_array[1])
+        if font_size <= 2:
+            return
+        font_size -= 2
+        font_string_array[1] = str(font_size)
+        settings['font'] = ' '.join(font_string_array)
+        card_display_text.config(font=settings['font'])
+        MDCT_Common.save_settings(settings)
+    
+    font_minus_button = tk.Button(root, text='A-', command=font_minus)
+    font_minus_button.pack(fill=tk.X, expand=True, side=tk.LEFT)
+
+    def font_plus():
+        font_string_array = settings['font'].split(' ')
+        font_size = int(font_string_array[1])
+        font_size += 2
+        font_string_array[1] = str(font_size)
+        settings['font'] = ' '.join(font_string_array)
+        card_display_text.config(font=settings['font'])
+        MDCT_Common.save_settings(settings)
+
+    font_plus_button = tk.Button(root, text='A+', command=font_plus)
+    font_plus_button.pack(fill=tk.X, expand=True, side=tk.LEFT)
 
     current_card_id = 0
 
@@ -164,7 +196,7 @@ try:
 
         root.after(180, update_card_detail)
     update_card_detail()
-
+    
     root.mainloop()
 
 except Exception as e:

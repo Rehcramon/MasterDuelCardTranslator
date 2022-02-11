@@ -1,5 +1,5 @@
 #    Master Duel Card Translator Project
-#    Copyright (C) 2022  LLForever and Rehcramon
+#    Copyright (C) 2022  Rehcramon and LLForever
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ class CardDetailProcessUtil:
 　　反馈地址：https://github.com/Rehcramon/MasterDuelCardTranslator/issues
 ''')
         CardDetailProcessUtil.__card.config(state=tk.DISABLED)
-        CardDetailProcessUtil.__card.pack()
+        CardDetailProcessUtil.__card.pack(fill=tk.BOTH, expand=True)
 
         CardDetailProcessUtil.__LRUCache = Cache(300)
 

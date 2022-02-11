@@ -1,5 +1,5 @@
 #    Master Duel Card Translator Project
-#    Copyright (C) 2022  LLForever and Rehcramon
+#    Copyright (C) 2022  Rehcramon and LLForever
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -33,7 +33,15 @@ cursor.execute('CREATE TABLE IF NOT EXISTS data (id INTEGER PRIMARY KEY, name TE
 
 print('请稍候。正在进行：[1/3]访问网络，下载英文卡片数据。')
 
-db = requests.get('https://db.ygoprodeck.com/api/v7/cardinfo.php')
+try:
+    db = requests.get('https://db.ygoprodeck.com/api/v7/cardinfo.php')
+except:
+    print('更新英文卡片数据时出现了一些问题。有可能是网络状况不佳。请再次尝试。')
+    print('如果确认网络状态良好后依旧无法更新，请反馈遇到的问题，谢谢。')
+    print('反馈地址：https://github.com/Rehcramon/MasterDuelCardTranslator/issues')
+    input()
+    raise
+
 data_list = db.json()['data']
 
 if len(data_list) > 10000:

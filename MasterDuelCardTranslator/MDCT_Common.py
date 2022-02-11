@@ -1,5 +1,5 @@
 #    Master Duel Card Translator Project
-#    Copyright (C) 2022  LLForever and Rehcramon
+#    Copyright (C) 2022  Rehcramon and LLForever
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -14,13 +14,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-VERSION = '0.6'
+import json
+
+VERSION = '1.0'
 
 SHORT_TITLE = 'MDCT v{}'.format(VERSION)
 
-INFO = '''
+INFO = '''\
     Master Duel Card Translator Project
-    Copyright (C) 2022  LLForever and Rehcramon
+    Copyright (C) 2022  Rehcramon and LLForever
 
     This program comes with ABSOLUTELY NO WARRANTY.
     This is free software, and you are welcome to
@@ -33,3 +35,9 @@ INFO = '''
 
 def print_info():
     print(INFO)
+
+def save_settings(settings):
+    settings_file = open('settings.json', 'w')
+    settings_string = json.dumps(settings)
+    settings_file.write(settings_string)
+    settings_file.close()
