@@ -57,7 +57,7 @@ class CardDetailProcessUtil:
 　　请确保卡片信息区域没有被遮挡。尤其是本界面不能遮挡住卡名和卡片文本，请先将本界面移动到屏幕右侧。
 　　如果仍无法匹配，可尝试关闭本程序后重新执行MDCT_PositionSetup进行配置。请务必注意配置完成时应能够识别正确的卡名和卡片文本。
 
-　　重新配置后，如果出现了非正确的卡名或卡片文本，还请帮忙反馈。十分感谢。
+　　重新配置完成时，如果出现了非正确的卡名或卡片文本，还请帮忙反馈。十分感谢。
 　　反馈地址：https://github.com/Rehcramon/MasterDuelCardTranslator/issues
 ''')
         CardDetailProcessUtil.__card.config(state=tk.DISABLED)
