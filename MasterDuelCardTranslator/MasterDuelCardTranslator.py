@@ -31,6 +31,7 @@ import pytesseract
 import MDCT_Common
 import MDCT_CardDetailProcessUtil as CDPU
 import MDCT_TargetParser
+from MDCT_CorrectRecognitionResult import correct_recognition_result
 
 try:
 
@@ -119,6 +120,7 @@ try:
         if (imgCache == None):
             screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
             card_desc = pytesseract.image_to_string(screenshotInvertImg, lang='eng')
+            card_desc = correct_recognition_result(card_desc)
             card_desc = card_desc.replace(' ', '').replace('"', '""')
         else:
             card_desc = imgCache
@@ -159,6 +161,7 @@ try:
                     if (imgCache == None):
                         screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
                         card_name = pytesseract.image_to_string(screenshotInvertImg, lang='eng', config='--psm 7')[:-1]
+                        card_name = correct_recognition_result(card_name)
                     else:
                         card_name = imgCache
                     if len(card_name) >= 3:

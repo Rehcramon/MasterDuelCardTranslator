@@ -22,6 +22,7 @@ from PIL import ImageOps
 import pytesseract
 
 import MDCT_Common
+from MDCT_CorrectRecognitionResult import correct_recognition_result
 
 MDCT_Common.print_info()
 
@@ -63,6 +64,7 @@ nh = height
 
 pyautogui.screenshot('screenshot.png', region=(nx, ny, nw, nh))
 card_name = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng', config='--psm 7')[:-1]
+card_name = correct_recognition_result(card_name)
 
 print('\n当前所识别的卡名为“{}”。'.format(card_name))
 print('如果卡名基本正确，请继续进行第6-7步。')
@@ -102,6 +104,7 @@ MDCT_Common.save_settings(settings)
 
 pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
 card_desc = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng')
+card_desc = correct_recognition_result(card_desc)
 
 print('\n\n当前所识别的卡片文本为：\n{}\n'.format(card_desc))
 print('如果文本除了最后一行均正确，建议关闭本程序后启动Master Duel Card Translator以查看效果。')
