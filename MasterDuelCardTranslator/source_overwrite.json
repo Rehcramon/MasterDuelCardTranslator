@@ -4,5 +4,11 @@
 		"name": "Junk Synchron",
 		"type": "Tuner Monster",
 		"desc": "When this card is Normal Summoned: You can target 1 Level 2 or lower monster in your GY; Special Summon that target in Defense Position, but negate its effects."
+	},
+	{
+		"id": 23893227,
+		"name": "Cyber Dragon Core",
+		"type": "Effect Monster",
+		"desc": "This card's name becomes \"Cyber Dragon\" while on the field or in the GY. If this card is Normal Summoned: Add 1 \"Cyber\" Spell/Trap from your Deck to your hand. If only your opponent controls a monster: You can banish this card from your GY; Special Summon 1 \"Cyber Dragon\" monster from your Deck. You can only use 1 \"Cyber Dragon Core\" effect per turn, and only once that turn."
 	}
 ]
