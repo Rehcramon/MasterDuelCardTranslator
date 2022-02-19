@@ -29,6 +29,7 @@ from PIL import ImageOps
 import pytesseract
 
 import MDCT_Common
+import MDCT_UserInterface
 import MDCT_CardDetailProcessUtil as CDPU
 import MDCT_TargetParser
 from MDCT_CorrectRecognitionResult import correct_recognition_result
@@ -57,15 +58,6 @@ try:
     
     root.bind('<Configure>', update_geometry)
 
-    def show_about_dialog():
-        tk.messagebox.showinfo(message=MDCT_Common.INFO, title='关于 '+MDCT_Common.SHORT_TITLE)
-
-    about_button = tk.Button(root, text='关于 '+MDCT_Common.SHORT_TITLE, command=show_about_dialog)
-    about_button.pack(fill=tk.X)
-
-    card_display_text = tk.scrolledtext.ScrolledText(root, width=1, height=1, font=settings['font'])
-    CDPU.initUtil(card_display_text)
-
     def font_minus():
         font_string_array = settings['font'].split(' ')
         font_size = int(font_string_array[1])
@@ -76,9 +68,6 @@ try:
         settings['font'] = ' '.join(font_string_array)
         card_display_text.config(font=settings['font'])
         MDCT_Common.save_settings(settings)
-    
-    font_minus_button = tk.Button(root, text='A-', command=font_minus)
-    font_minus_button.pack(fill=tk.X, expand=True, side=tk.LEFT)
 
     def font_plus():
         font_string_array = settings['font'].split(' ')
@@ -89,8 +78,20 @@ try:
         card_display_text.config(font=settings['font'])
         MDCT_Common.save_settings(settings)
 
-    font_plus_button = tk.Button(root, text='A+', command=font_plus)
-    font_plus_button.pack(fill=tk.X, expand=True, side=tk.LEFT)
+    menu = tk.Menu(root)
+    root.config(menu=menu)
+    settings_menu = tk.Menu(menu, tearoff=0)
+    menu.add_cascade(label='设置', menu=settings_menu)
+    menu.add_command(label='关于', command=MDCT_UserInterface.about_messagebox)
+    menu.add_separator()
+    menu.add_command(label='A-', command=font_minus)
+    menu.add_command(label='A+', command=font_plus)
+
+    settings_menu.add_command(label='更新源数据', command=MDCT_UserInterface.update_source_command)
+    settings_menu.add_command(label='更新目标数据', command=MDCT_UserInterface.update_target_command)
+
+    card_display_text = tk.scrolledtext.ScrolledText(root, width=1, height=1, font=settings['font'])
+    CDPU.initUtil(card_display_text)
 
     current_card_id = 0
 

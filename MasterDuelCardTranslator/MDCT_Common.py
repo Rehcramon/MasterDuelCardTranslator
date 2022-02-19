@@ -16,7 +16,7 @@
 
 import json
 
-VERSION = '1.1'
+VERSION = '1.2'
 
 SHORT_TITLE = 'MDCT v{}'.format(VERSION)
 
@@ -30,11 +30,17 @@ INFO = '''\
     See the GNU General Public License for more details.
 
     Version {}
-    https://github.com/Rehcramon/MasterDuelCardTranslator
+    https://github.com/Rehcramon/MasterDuelCardTranslator \
 '''.format(VERSION)
 
 def print_info():
     print(INFO)
+
+def load_setting(key):
+    settings_file = open('settings.json', 'r')
+    settings = json.loads(settings_file.readline())
+    settings_file.close()
+    return settings[key]
 
 def save_settings(settings):
     settings_file = open('settings.json', 'w')
