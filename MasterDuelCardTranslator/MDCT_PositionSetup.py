@@ -99,7 +99,7 @@ position = {
 }
 
 settings['position'] = position
-settings['geometry'] = '300x550+{}+{}'.format(max(position['x'] + position['w'], position['nx'] + position['nw']) + 20, position['ny'])
+settings['geometry'] = '300x500+{}+{}'.format(max(position['x'] + position['w'], position['nx'] + position['nw']) + 20, position['ny'])
 
 MDCT_Common.save_settings(settings)
 
