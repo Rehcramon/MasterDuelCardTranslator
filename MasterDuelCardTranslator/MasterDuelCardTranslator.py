@@ -119,7 +119,7 @@ try:
         imgCache = CDPU.getLRUCacheByKey(imgMD5)
         if (imgCache == None):
             screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
-            card_desc = pytesseract.image_to_string(screenshotInvertImg, lang='eng')
+            card_desc = pytesseract.image_to_string(screenshotInvertImg, lang=settings['source_language'])
             card_desc = correct_recognition_result(card_desc)
             card_desc = card_desc.replace(' ', '').replace('"', '""')
         else:
@@ -160,7 +160,7 @@ try:
                     imgCache = CDPU.getLRUCacheByKey(imgMD5)
                     if (imgCache == None):
                         screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
-                        card_name = pytesseract.image_to_string(screenshotInvertImg, lang='eng', config='--psm 7')[:-1]
+                        card_name = pytesseract.image_to_string(screenshotInvertImg, lang=settings['source_language'], config='--psm 7')[:-1]
                         card_name = correct_recognition_result(card_name)
                     else:
                         card_name = imgCache

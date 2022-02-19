@@ -26,6 +26,10 @@ from MDCT_CorrectRecognitionResult import correct_recognition_result
 
 MDCT_Common.print_info()
 
+settings_file = open('settings.json', 'r')
+settings = json.loads(settings_file.readline())
+settings_file.close()
+
 welcome_message = '''
 欢迎使用Master Duel Card Translator。
 现在正在选择所需要识别的文本区域。请按照以下步骤完成。
@@ -63,7 +67,7 @@ nw = width
 nh = height
 
 pyautogui.screenshot('screenshot.png', region=(nx, ny, nw, nh))
-card_name = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng', config='--psm 7')[:-1]
+card_name = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang=settings['source_language'], config='--psm 7')[:-1]
 card_name = correct_recognition_result(card_name)
 
 print('\n当前所识别的卡名为“{}”。'.format(card_name))
@@ -94,16 +98,13 @@ position = {
     'nh': nh
 }
 
-settings_file = open('settings.json', 'r')
-settings = json.loads(settings_file.readline())
-settings_file.close()
 settings['position'] = position
 settings['geometry'] = '300x550+{}+{}'.format(max(position['x'] + position['w'], position['nx'] + position['nw']) + 20, position['ny'])
 
 MDCT_Common.save_settings(settings)
 
 pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
-card_desc = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang='eng')
+card_desc = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang=settings['source_language'])
 card_desc = correct_recognition_result(card_desc)
 
 print('\n\n当前所识别的卡片文本为：\n{}\n'.format(card_desc))
