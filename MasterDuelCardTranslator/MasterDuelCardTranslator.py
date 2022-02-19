@@ -15,6 +15,7 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+import os.path
 import json
 import traceback
 import sqlite3
@@ -51,6 +52,15 @@ try:
     root.resizable(True, True)
     root.attributes('-topmost', True)
     root.update()
+
+    if (not os.path.isfile('source.cdb')) or (not os.path.isfile('search.db')):
+        MDCT_UserInterface.update_source_command()
+        if (not os.path.isfile('source.cdb')) or (not os.path.isfile('search.db')):
+            raise Exception('No source database.')
+    if not os.path.isfile('ygocore.cdb'):
+        MDCT_UserInterface.update_target_command()
+        if not os.path.isfile('ygocore.cdb'):
+            raise Exception('No target database.')
 
     def update_geometry(event):
         settings['geometry'] = root.geometry(None)
