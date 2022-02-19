@@ -30,6 +30,9 @@ from PIL import ImageOps
 import pytesseract
 
 import MDCT_Common
+from MDCT_Common import get_setting
+from MDCT_Common import set_setting
+from MDCT_Common import get_position
 import MDCT_UserInterface
 import MDCT_CardDetailProcessUtil as CDPU
 import MDCT_TargetParser
@@ -38,19 +41,28 @@ from MDCT_CorrectRecognitionResult import correct_recognition_result
 try:
 
     try:
-        settings_file = open('settings.json', 'r')
-        settings = json.loads(settings_file.readline())
-        settings_file.close()
-        position = settings['position']
+        MDCT_Common.load_settings()
     except:
-        pyautogui.alert('请先执行MDCT_PositionSetup，确保配置正确后再执行本程序。', MDCT_Common.SHORT_TITLE)
-        raise
+        MDCT_Common.load_settings('_settings.json')
+        MDCT_Common.save_settings()
 
     root = tk.Tk()
     root.title(MDCT_Common.SHORT_TITLE)
-    root.geometry(settings['geometry'])
-    root.resizable(True, True)
     root.attributes('-topmost', True)
+    root.resizable(True, True)
+    root.update()
+
+    try:
+        root.geometry(get_setting('geometry'))
+    except:
+        root.geometry('1x1+0+0')
+        MDCT_UserInterface.setup_position_command()
+        try:
+            root.geometry(get_setting('geometry'))
+        except:
+            root.destroy()
+            raise Exception('Please setup position before use.')
+    
     root.update()
 
     if (not os.path.isfile('source.cdb')) or (not os.path.isfile('search.db')):
@@ -63,30 +75,32 @@ try:
             raise Exception('No target database.')
 
     def update_geometry(event):
-        settings['geometry'] = root.geometry(None)
-        MDCT_Common.save_settings(settings)
+        set_setting('geometry', root.geometry(None))
+        MDCT_Common.save_settings()
     
     root.bind('<Configure>', update_geometry)
 
     def font_minus():
-        font_string_array = settings['font'].split(' ')
+        font_string_array = get_setting('font').split(' ')
         font_size = int(font_string_array[1])
         if font_size <= 2:
             return
         font_size -= 2
         font_string_array[1] = str(font_size)
-        settings['font'] = ' '.join(font_string_array)
-        card_display_text.config(font=settings['font'])
-        MDCT_Common.save_settings(settings)
+        font_string = ' '.join(font_string_array)
+        set_setting('font', font_string)
+        card_display_text.config(font=font_string)
+        MDCT_Common.save_settings()
 
     def font_plus():
-        font_string_array = settings['font'].split(' ')
+        font_string_array = get_setting('font').split(' ')
         font_size = int(font_string_array[1])
         font_size += 2
         font_string_array[1] = str(font_size)
-        settings['font'] = ' '.join(font_string_array)
-        card_display_text.config(font=settings['font'])
-        MDCT_Common.save_settings(settings)
+        font_string = ' '.join(font_string_array)
+        set_setting('font', font_string)
+        card_display_text.config(font=font_string)
+        MDCT_Common.save_settings()
 
     menu = tk.Menu(root)
     root.config(menu=menu)
@@ -97,10 +111,12 @@ try:
     menu.add_command(label='A-', command=font_minus)
     menu.add_command(label='A+', command=font_plus)
 
+    settings_menu.add_command(label='配置文字区域', command=MDCT_UserInterface.setup_position_command)
+    settings_menu.add_separator()
     settings_menu.add_command(label='更新源数据', command=MDCT_UserInterface.update_source_command)
     settings_menu.add_command(label='更新目标数据', command=MDCT_UserInterface.update_target_command)
 
-    card_display_text = tk.scrolledtext.ScrolledText(root, width=1, height=1, font=settings['font'])
+    card_display_text = tk.scrolledtext.ScrolledText(root, width=1, height=1, font=get_setting('font'))
     CDPU.initUtil(card_display_text)
 
     current_card_id = 0
@@ -122,7 +138,7 @@ try:
 
         current_card_id = CDPU.getCurrent_card_id()
 
-        pyautogui.screenshot('screenshot.png', region=(position['x'], position['y'], position['w'], position['h']))
+        pyautogui.screenshot('screenshot.png', region=(get_position()['tx'], get_position()['ty'], get_position()['tw'], get_position()['th']))
 
         # add LRU Cache Before OCR. Improved performance in most scenarios
         screenshotImg = Image.open('screenshot.png')
@@ -130,7 +146,7 @@ try:
         imgCache = CDPU.getLRUCacheByKey(imgMD5)
         if (imgCache == None):
             screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
-            card_desc = pytesseract.image_to_string(screenshotInvertImg, lang=settings['source_language'])
+            card_desc = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'))
             card_desc = correct_recognition_result(card_desc)
             card_desc = card_desc.replace(' ', '').replace('"', '""')
         else:
@@ -164,14 +180,14 @@ try:
                 if card_desc_found == True:
                     break
                 elif i == 0:
-                    pyautogui.screenshot('screenshot.png', region=(position['nx'], position['ny'], position['nw'], position['nh']))
+                    pyautogui.screenshot('screenshot.png', region=(get_position()['nx'], get_position()['ny'], get_position()['nw'], get_position()['nh']))
                     # add LRU Cache Before OCR. Improved performance in most scenarios
                     screenshotImg = Image.open('screenshot.png')
                     imgMD5 = CDPU.dhash(screenshotImg)
                     imgCache = CDPU.getLRUCacheByKey(imgMD5)
                     if (imgCache == None):
                         screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
-                        card_name = pytesseract.image_to_string(screenshotInvertImg, lang=settings['source_language'], config='--psm 7')[:-1]
+                        card_name = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'), config='--psm 7')[:-1]
                         card_name = correct_recognition_result(card_name)
                     else:
                         card_name = imgCache

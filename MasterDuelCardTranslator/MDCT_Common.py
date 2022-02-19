@@ -36,14 +36,24 @@ INFO = '''\
 def print_info():
     print(INFO)
 
-def load_setting(key):
-    settings_file = open('settings.json', 'r')
-    settings = json.loads(settings_file.readline())
-    settings_file.close()
-    return settings[key]
+SETTINGS = None
 
-def save_settings(settings):
-    settings_file = open('settings.json', 'w')
-    settings_string = json.dumps(settings)
-    settings_file.write(settings_string)
+def load_settings(filename = 'settings.json'):
+    global SETTINGS
+    settings_file = open(filename, 'r')
+    SETTINGS = json.loads(settings_file.readline())
     settings_file.close()
+
+def get_setting(key):
+    return SETTINGS[key]
+
+def set_setting(key, value):
+    SETTINGS[key] = value
+
+def save_settings():
+    settings_file = open('settings.json', 'w')
+    settings_file.write(json.dumps(SETTINGS))
+    settings_file.close()
+
+def get_position():
+    return SETTINGS['position']
