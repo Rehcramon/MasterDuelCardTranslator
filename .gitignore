@@ -6,7 +6,6 @@ MasterDuelCardTranslator/MasterDuelCardTranslator.pyproj
 
 MasterDuelCardTranslator/__pycache__
 MasterDuelCardTranslator/exception.txt
-MasterDuelCardTranslator/screenshot.png
 MasterDuelCardTranslator/search.db
 MasterDuelCardTranslator/source.cdb
 MasterDuelCardTranslator/ygocore.cdb

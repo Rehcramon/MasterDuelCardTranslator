@@ -147,10 +147,9 @@ try:
 
         current_card_id = CDPU.getCurrent_card_id()
 
-        pyautogui.screenshot('screenshot.png', region=(get_position()['tx'], get_position()['ty'], get_position()['tw'], get_position()['th']))
+        screenshotImg = pyautogui.screenshot(region=(get_position()['tx'], get_position()['ty'], get_position()['tw'], get_position()['th']))
 
         # add LRU Cache Before OCR. Improved performance in most scenarios
-        screenshotImg = Image.open('screenshot.png')
         imgMD5 = CDPU.dhash(screenshotImg)
         imgCache = CDPU.getLRUCacheByKey(imgMD5)
         if (imgCache == None):
@@ -189,9 +188,8 @@ try:
                 if card_desc_found == True:
                     break
                 elif i == 0:
-                    pyautogui.screenshot('screenshot.png', region=(get_position()['nx'], get_position()['ny'], get_position()['nw'], get_position()['nh']))
+                    screenshotImg = pyautogui.screenshot(region=(get_position()['nx'], get_position()['ny'], get_position()['nw'], get_position()['nh']))
                     # add LRU Cache Before OCR. Improved performance in most scenarios
-                    screenshotImg = Image.open('screenshot.png')
                     imgMD5 = CDPU.dhash(screenshotImg)
                     imgCache = CDPU.getLRUCacheByKey(imgMD5)
                     if (imgCache == None):

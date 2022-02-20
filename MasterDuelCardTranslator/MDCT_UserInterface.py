@@ -78,12 +78,12 @@ def setup_position():
     tw = width
     th = height
 
-    pyautogui.screenshot('screenshot.png', region=(nx, ny, nw, nh))
-    card_name = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang=get_setting('source_language'), config='--psm 7')[:-1]
+    card_name_screenshot = pyautogui.screenshot(region=(nx, ny, nw, nh))
+    card_name = pytesseract.image_to_string(ImageOps.invert(card_name_screenshot.convert('L')), lang=get_setting('source_language'), config='--psm 7')[:-1]
     card_name = correct_recognition_result(card_name)
 
-    pyautogui.screenshot('screenshot.png', region=(tx, ty, tw, th))
-    card_desc = pytesseract.image_to_string(ImageOps.invert(Image.open('screenshot.png').convert('L')), lang=get_setting('source_language'))[:-1]
+    card_desc_screenshot = pyautogui.screenshot(region=(tx, ty, tw, th))
+    card_desc = pytesseract.image_to_string(ImageOps.invert(card_desc_screenshot.convert('L')), lang=get_setting('source_language'))[:-1]
     card_desc = correct_recognition_result(card_desc)
 
     ret = tk.messagebox.askquestion('请确认配置结果', '''\
