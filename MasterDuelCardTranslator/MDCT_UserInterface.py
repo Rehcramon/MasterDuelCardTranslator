@@ -203,19 +203,29 @@ def update_source():
     for source_card_info in res:
         source_card_id = source_card_info[0]
         source_card_name = source_card_info[1]
-        source_card_desc = (source_card_info[3] + '\r\n').replace('[ Monster Effect ]\r\n', '').replace('[ Flavor Text ]\r\n', '').replace('[ Pendulum Effect ]', '[Pendulum Effect]').replace('\r\n', '\n').replace('\n', ' ')
+        source_card_desc = (source_card_info[3] + '\r\n').replace('[ Pendulum Effect ]', '[Pendulum Effect]').replace('\r\n', '\n').replace('\n', ' ')
         source_card_desc_list = source_card_desc.split('---------------------------------------- ')
-        if len(source_card_desc_list) == 1:
+        if len(source_card_desc_list) == 2:
+            source_card_desc = (source_card_desc_list[0] + source_card_desc_list[1]).replace('[ Monster Effect ]', ' ').replace('[ Flavor Text ]', ' ')
             source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
-        elif len(source_card_desc_list) == 2:
-            source_card_desc = source_card_desc_list[0] + source_card_desc_list[1]
+            source_card_desc = (source_card_desc_list[1] + source_card_desc_list[0]).replace('[ Monster Effect ]', ' ').replace('[ Flavor Text ]', ' ')
             source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
-            source_card_desc = source_card_desc_list[1] + source_card_desc_list[0]
+            continue
+        source_card_desc_list = source_card_desc.split('[ Monster Effect ]')
+        if len(source_card_desc_list) == 2:
+            source_card_desc = (source_card_desc_list[0] + source_card_desc_list[1])
             source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
-        else:
-            tk.messagebox.showerror('更新源数据失败', '源数据的内容可能存在问题。欢迎反馈此情况。谢谢。失败原因：编号{}的卡源数据文本格式错误。'.format(source_card_id))
-            toplevel.destroy()
-            return
+            source_card_desc = (source_card_desc_list[1] + source_card_desc_list[0])
+            source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
+            continue
+        source_card_desc_list = source_card_desc.split('[ Flavor Text ]')
+        if len(source_card_desc_list) == 2:
+            source_card_desc = (source_card_desc_list[0] + source_card_desc_list[1])
+            source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
+            source_card_desc = (source_card_desc_list[1] + source_card_desc_list[0])
+            source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
+            continue
+        source_card_desc_and_id.append((source_card_desc.replace(' ', ''), source_card_id, source_card_name))
 
     for source_card_info in source_card_desc_and_id:
         sql = 'INSERT INTO data VALUES ("{}", {}, "{}");'.format(source_card_info[0].replace('"', '""'), source_card_info[1], source_card_info[2].replace('"', '""'))

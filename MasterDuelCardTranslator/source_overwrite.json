@@ -10,5 +10,11 @@
 		"name": "Cyber Dragon Core",
 		"type": "Effect Monster",
 		"desc": "This card's name becomes \"Cyber Dragon\" while on the field or in the GY. If this card is Normal Summoned: Add 1 \"Cyber\" Spell/Trap from your Deck to your hand. If only your opponent controls a monster: You can banish this card from your GY; Special Summon 1 \"Cyber Dragon\" monster from your Deck. You can only use 1 \"Cyber Dragon Core\" effect per turn, and only once that turn."
+	},
+	{
+		"id": 27354732,
+		"name": "Mythical Beast Jackal King",
+		"type": "Pendulum Effect Monster",
+		"desc": "[ Pendulum Effect ]\r\nIf you have no card in your other Pendulum Zone: You can destroy this card, and if you do, Special Summon 1 face-up \"Mythical Beast\" Pendulum Monster from your Extra Deck, except \"Mythical Beast Jackal King\". You can only use this effect of \"Mythical Beast Jackal King\" once per turn.\r\n----------------------------------------\r\n[ Monster Effect ]\r\nEach time a Spell Card is activated, place 2 Spell Counters on this card when that Spell resolves. Once per turn, when an opponent activates a monster effect (Quick Effect): You can remove 2 Spell Counters from your field; negate the activation, and if you do, destroy that card."
 	}
 ]
