@@ -14,7 +14,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-BEFORE_AND_AFTER = [
+import re
+
+BEFORE_AND_AFTER_PLAIN = [
     ('@ignister', '@Ignister'),
     ('@lgnister', '@Ignister'),
     ('A.i.', 'A.I.'),
@@ -22,7 +24,14 @@ BEFORE_AND_AFTER = [
     ('A.|.', 'A.I.')
 ]
 
+BEFORE_AND_AFTER_REGULAR = [
+    ('Live(.){1,3}Twin', 'Live☆Twin'),
+    ('Evil(.){1,3}Twin', 'Evil★Twin')
+]
+
 def correct_recognition_result(s):
-    for p in BEFORE_AND_AFTER:
+    for p in BEFORE_AND_AFTER_PLAIN:
         s = s.replace(p[0], p[1])
+    for p in BEFORE_AND_AFTER_REGULAR:
+        s = re.sub(p[0], p[1], s)
     return s
