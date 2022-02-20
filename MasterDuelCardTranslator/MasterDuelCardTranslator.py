@@ -56,7 +56,7 @@ try:
         root.geometry(get_setting('geometry'))
     except:
         root.geometry('1x1+0+0')
-        MDCT_UserInterface.setup_position_command()
+        MDCT_UserInterface.setup_position()
         try:
             root.geometry(get_setting('geometry'))
         except:
@@ -66,11 +66,11 @@ try:
     root.update()
 
     if (not os.path.isfile('source.cdb')) or (not os.path.isfile('search.db')):
-        MDCT_UserInterface.update_source_command()
+        MDCT_UserInterface.update_source()
         if (not os.path.isfile('source.cdb')) or (not os.path.isfile('search.db')):
             raise Exception('No source database.')
     if not os.path.isfile('ygocore.cdb'):
-        MDCT_UserInterface.update_target_command()
+        MDCT_UserInterface.update_target()
         if not os.path.isfile('ygocore.cdb'):
             raise Exception('No target database.')
 
