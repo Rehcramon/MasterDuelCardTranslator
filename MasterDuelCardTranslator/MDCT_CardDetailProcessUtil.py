@@ -58,7 +58,7 @@ class CardDetailProcessUtil:
 　　如果仍无法匹配，可执行菜单栏中的“设置”->“配置文字区域”。请务必注意配置完成时应能够识别正确的卡名和卡片文本。
 
 　　重新配置完成时，如果出现了非正确的卡名或卡片文本，还请帮忙反馈。十分感谢。
-　　反馈地址：https://github.com/Rehcramon/MasterDuelCardTranslator/issues
+　　如要反馈，请执行菜单栏中的“帮助”->“发送反馈”。之后会打开一个浏览器的窗口。反馈时需要登录GitHub账号。感谢理解与支持。
 ''')
         CardDetailProcessUtil.__card.config(state=tk.DISABLED)
         CardDetailProcessUtil.__card.pack(fill=tk.BOTH, expand=True)

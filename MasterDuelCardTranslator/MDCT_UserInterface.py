@@ -18,6 +18,7 @@ import requests
 import sqlite3
 import json
 import os
+import webbrowser
 import tkinter as tk
 import tkinter.messagebox
 
@@ -31,10 +32,7 @@ from MDCT_Common import get_setting
 from MDCT_Common import set_setting
 from MDCT_CorrectRecognitionResult import correct_recognition_result
 
-def about_messagebox():
-    tk.messagebox.showinfo('关于 '+MDCT_Common.SHORT_TITLE, MDCT_Common.INFO)
-
-def setup_position_command():
+def setup_position():
     ret = tk.messagebox.askquestion('配置文字区域', '''\
 　　是要重新配置MDCT所识别的文字区域吗？如果是，则请仔细阅读以下信息。
 
@@ -114,7 +112,7 @@ def setup_position_command():
     set_setting('geometry', '300x500+{}+{}'.format(max(position['tx'] + position['tw'], position['nx'] + position['nw']) + 20, position['ny']))
     MDCT_Common.save_settings()
 
-def update_source_command():
+def update_source():
     ret = tk.messagebox.askquestion('更新源数据', '''\
 要更新源数据吗？此过程需要访问网络，可能需要若干分钟。
 数据来源：https://db.ygoprodeck.com/api/v7/cardinfo.php
@@ -229,7 +227,7 @@ def update_source_command():
     tk.messagebox.showinfo('更新源数据完成', '已更新源数据。')
     toplevel.destroy()
 
-def update_target_command():
+def update_target():
     ret = tk.messagebox.askquestion('更新目标数据', '''\
 要更新目标数据吗？此过程需要访问网络，可能需要若干分钟。
 数据来源：https://github.com/mycard/ygopro-database/raw/master/locales/zh-CN/cards.cdb
@@ -278,3 +276,18 @@ def update_target_command():
 
     tk.messagebox.showinfo('更新目标数据完成', '已更新目标数据。')
     toplevel.destroy()
+
+def browse_latest_release():
+    webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/releases/latest')
+
+def browse_new_issue():
+    webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/issues/new/choose')
+
+def browse_github():
+    webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator')
+
+def browse_bilibili():
+    webbrowser.open('https://space.bilibili.com/4191644')
+
+def about_messagebox():
+    tk.messagebox.showinfo('关于 '+MDCT_Common.SHORT_TITLE, MDCT_Common.INFO)
