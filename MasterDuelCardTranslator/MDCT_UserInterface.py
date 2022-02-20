@@ -33,7 +33,7 @@ from MDCT_Common import set_setting
 from MDCT_CorrectRecognitionResult import correct_recognition_result
 
 def setup_position():
-    ret = tk.messagebox.askquestion('配置文字区域', '''\
+    ret = tk.messagebox.askquestion('配置文字区域 ({})'.format(MDCT_Common.SHORT_TITLE), '''\
 　　是要重新配置MDCT所识别的文字区域吗？如果是，则请仔细阅读以下信息。
 
 　　欢迎使用Master Duel Card Translator。
@@ -45,7 +45,9 @@ def setup_position():
 
 　　在这4个对话框之后，会有最后1个对话框展示当前识别的文字。请确认是否正确。
 
-　　如果已经准备好了配置，请启动Yu-Gi-Oh! Master Duel，将语言修改为English，进入DUEL LIVE或SOLO的任意一场决斗，点击任意一张卡片，让屏幕左侧出现卡片的信息。之后点击“是”继续。\
+　　如果已经准备好了配置，请启动Yu-Gi-Oh! Master Duel，将语言修改为English，进入SOLO或DUEL LIVE*的任意一场决斗，点击任意一张卡片，让屏幕左侧出现卡片的信息。之后点击“是”继续。
+
+* 可能需要暂停播放DUEL LIVE。
 ''')
     if ret == 'no':
         return

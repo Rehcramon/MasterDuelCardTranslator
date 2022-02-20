@@ -117,7 +117,7 @@ try:
     settings_menu.add_command(label='更新源数据', command=MDCT_UserInterface.update_source)
     settings_menu.add_command(label='更新目标数据', command=MDCT_UserInterface.update_target)
 
-    help_menu.add_command(label='检查更新', command=MDCT_UserInterface.browse_latest_release)
+    help_menu.add_command(label='查看最新版本', command=MDCT_UserInterface.browse_latest_release)
     help_menu.add_command(label='发送反馈', command=MDCT_UserInterface.browse_new_issue)
     help_menu.add_separator()
     help_menu.add_command(label='项目首页（GitHub）', command=MDCT_UserInterface.browse_github)
