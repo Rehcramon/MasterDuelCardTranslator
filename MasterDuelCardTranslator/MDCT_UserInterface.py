@@ -18,6 +18,7 @@ import requests
 import sqlite3
 import json
 import os
+import subprocess
 import webbrowser
 import tkinter as tk
 import tkinter.messagebox
@@ -289,8 +290,86 @@ def update_target():
     tk.messagebox.showinfo('更新目标数据完成', '已更新目标数据。')
     toplevel.destroy()
 
-def browse_latest_release():
-    webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/releases/latest')
+def check_update():
+    try:
+        latest = requests.get('https://api.github.com/repos/Rehcramon/MasterDuelCardTranslator/releases/latest', headers={'Accept': 'application/vnd.github.v3+json'}).json()
+    except:
+        ret = tk.messagebox.askquestion('要查看最新版本页面吗？', '''\
+检查更新失败。有可能是网络状况不佳。
+点击“是”使用浏览器查看最新版本页面。点击“否”取消更新。\
+''')
+        if ret == 'yes':
+            webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/releases/latest')
+        return
+    if latest['tag_name'] == 'v{}'.format(MDCT_Common.VERSION):
+        tk.messagebox.showinfo('检查更新', '当前最新版本为v{}，无需更新。'.format(MDCT_Common.VERSION))
+        return
+    asset_name = 'MasterDuelCardTranslator_{}.zip'.format(latest['tag_name'])
+    for asset in latest['assets']:
+        if asset['name'].find('MDCT_Patch') != -1 and asset['name'].split('FROM')[1][1:-4] == MDCT_Common.VERSION:
+            asset_name = asset['name']
+            break
+    asset_size = None
+    asset_browser_download_url = None
+    for asset in latest['assets']:
+        if asset['name'] == asset_name:
+            asset_size = asset['size']
+            asset_browser_download_url = asset['browser_download_url']
+            break
+    if asset_size == None or asset_browser_download_url == None:
+        tk.messagebox.showinfo('检查更新', '作者可能还在发布最新版本，请稍后重试。\n如果一直都是这种情况，希望能够反馈，谢谢。')
+        return
+    ret = tk.messagebox.askquestion('检查更新', '''\
+当前最新版本为{}，需要更新吗？点击“是”以下载并安装更新。点击“否”取消更新。
+
+更新文档：
+{}
+
+即将下载的文件：{}
+文件大小：约 {} MB\
+'''.format(latest['tag_name'], latest['body'], asset_name, asset_size >> 20))
+    if ret == 'no':
+        return
+    toplevel = tk.Toplevel()
+    toplevel.title('正在更新MDCT')
+    toplevel.geometry('300x200')
+    toplevel.attributes('-topmost', True)
+    toplevel.update()
+
+    text = tk.scrolledtext.ScrolledText(toplevel, width=10000, height=10000, font=get_setting('font'))
+    text.pack()
+
+    text.insert(tk.INSERT, '''\
+正在更新MDCT。可能需要若干分钟。
+若MDCT出现若干分钟的未响应，是正常情况。
+如果长时间未响应，则有可能是网络状况不佳，建议强行退出本界面后手动更新。
+
+如果更新成功，MDCT将会重新启动。届时可能需要重新配置MDCT。\
+''')
+    text.config(state=tk.DISABLED)
+    toplevel.update()
+
+    try:
+        patch = requests.get(asset_browser_download_url)
+    except:
+        ret = tk.messagebox.askquestion('要查看最新版本页面吗？', '''\
+下载更新失败。有可能是网络状况不佳。
+点击“是”使用浏览器查看最新版本页面。点击“否”取消更新。\
+''')
+        if ret == 'yes':
+            webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/releases/latest')
+        toplevel.destroy()
+        return
+
+    patch_file = open('patch.zip', 'wb')
+    patch_file.write(patch.content)
+    patch_file.close()
+    toplevel.destroy()
+    
+    try:
+        subprocess.run(['powershell', '.\MDCT_PatchInstaller.ps1'])
+    except:
+        tk.messagebox.showinfo('请手动更新', '似乎本机上没有安装Windows Powershell，故无法继续更新。请退出MDCT后，将目录下的patch.zip解压缩覆盖即可完成更新。')
 
 def browse_new_issue():
     webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/issues/new/choose')

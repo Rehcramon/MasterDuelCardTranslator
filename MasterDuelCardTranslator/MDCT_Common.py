@@ -16,7 +16,7 @@
 
 import json
 
-VERSION = '1.2'
+VERSION = '1.3'
 
 SHORT_TITLE = 'MDCT v{}'.format(VERSION)
 
