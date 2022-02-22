@@ -33,9 +33,6 @@ INFO = '''\
     https://github.com/Rehcramon/MasterDuelCardTranslator \
 '''.format(VERSION)
 
-def print_info():
-    print(INFO)
-
 SETTINGS = None
 
 def load_settings(filename = 'settings.json'):

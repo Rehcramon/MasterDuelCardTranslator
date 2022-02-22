@@ -117,13 +117,20 @@ try:
     settings_menu.add_command(label='更新源数据', command=MDCT_UserInterface.update_source)
     settings_menu.add_command(label='更新目标数据', command=MDCT_UserInterface.update_target)
 
-    help_menu.add_command(label='检查更新', command=MDCT_UserInterface.check_update)
+    author_menu = tk.Menu(help_menu, tearoff=0)
+    help_menu.add_command(label='查看帮助', command=MDCT_UserInterface.view_help)
     help_menu.add_command(label='发送反馈', command=MDCT_UserInterface.browse_new_issue)
+    help_menu.add_command(label='检查更新', command=MDCT_UserInterface.check_update)
     help_menu.add_separator()
-    help_menu.add_command(label='项目首页（GitHub）', command=MDCT_UserInterface.browse_github)
-    help_menu.add_command(label='作者首页（bilibili）', command=MDCT_UserInterface.browse_bilibili)
+    help_menu.add_command(label='MDCT项目首页', command=MDCT_UserInterface.browse_github)
+    help_menu.add_cascade(label='联系作者', menu=author_menu)
     help_menu.add_separator()
     help_menu.add_command(label='关于 {}'.format(MDCT_Common.SHORT_TITLE), command=MDCT_UserInterface.about_messagebox)
+
+    author_menu.add_command(label='Rehcramon@GitHub', command=MDCT_UserInterface.browse_rehcramon_github)
+    author_menu.add_command(label='Rehcramon@bilibili', command=MDCT_UserInterface.browse_rehcramon_bilibili)
+    author_menu.add_separator()
+    author_menu.add_command(label='LLForever@GitHub', command=MDCT_UserInterface.browse_llforever_github)
 
     card_display_text = tk.scrolledtext.ScrolledText(root, width=1, height=1, font=get_setting('font'))
     CDPU.initUtil(card_display_text)

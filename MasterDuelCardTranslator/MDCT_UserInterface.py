@@ -48,7 +48,7 @@ def setup_position():
 
 　　如果已经准备好了配置，请启动Yu-Gi-Oh! Master Duel，将语言修改为English，进入SOLO或DUEL LIVE*的任意一场决斗，点击任意一张卡片，让屏幕左侧出现卡片的信息。之后点击“是”继续。
 
-* 可能需要暂停播放DUEL LIVE。
+* 可能需要暂停播放DUEL LIVE。\
 ''')
     if ret == 'no':
         return
@@ -119,7 +119,7 @@ def update_source():
     ret = tk.messagebox.askquestion('更新源数据', '''\
 要更新源数据吗？此过程需要访问网络，可能需要若干分钟。
 数据来源：https://db.ygoprodeck.com/api/v7/cardinfo.php
-请参考：https://db.ygoprodeck.com/api-guide/\
+请参考：https://db.ygoprodeck.com/api-guide/ \
 ''')
     if ret == 'no':
         return
@@ -290,6 +290,12 @@ def update_target():
     tk.messagebox.showinfo('更新目标数据完成', '已更新目标数据。')
     toplevel.destroy()
 
+def view_help():
+    webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/wiki/Home-(Simplified-Chinese)')
+
+def browse_new_issue():
+    webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/issues/new/choose')
+
 def check_update():
     try:
         latest = requests.get('https://api.github.com/repos/Rehcramon/MasterDuelCardTranslator/releases/latest', headers={'Accept': 'application/vnd.github.v3+json'}).json()
@@ -320,7 +326,9 @@ def check_update():
         tk.messagebox.showinfo('检查更新', '作者可能还在发布最新版本，请稍后重试。\n如果一直都是这种情况，希望能够反馈，谢谢。')
         return
     ret = tk.messagebox.askquestion('检查更新', '''\
-当前最新版本为{}，需要更新吗？点击“是”以下载并安装更新。点击“否”取消更新。
+当前最新版本为{}，需要更新吗？
+点击“是”以下载并安装更新。点击“否”取消更新。
+更新可能需要若干分钟，请耐心等待。
 
 更新文档：
 {}
@@ -369,16 +377,19 @@ def check_update():
     try:
         subprocess.run(['powershell', '.\MDCT_PatchInstaller.ps1'])
     except:
-        tk.messagebox.showinfo('请手动更新', '似乎本机上没有安装Windows Powershell，故无法继续更新。请退出MDCT后，将目录下的patch.zip解压缩覆盖即可完成更新。')
-
-def browse_new_issue():
-    webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/issues/new/choose')
+        tk.messagebox.showinfo('请手动更新', '似乎本机上没有安装Windows Powershell，故无法继续更新。\n请退出MDCT后，将目录下的patch.zip解压缩覆盖即可完成更新。')
 
 def browse_github():
     webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator')
 
-def browse_bilibili():
+def browse_rehcramon_github():
+    webbrowser.open('https://github.com/Rehcramon')
+
+def browse_rehcramon_bilibili():
     webbrowser.open('https://space.bilibili.com/4191644')
+
+def browse_llforever_github():
+    webbrowser.open('https://github.com/LLForever')
 
 def about_messagebox():
     tk.messagebox.showinfo('关于 '+MDCT_Common.SHORT_TITLE, MDCT_Common.INFO)
