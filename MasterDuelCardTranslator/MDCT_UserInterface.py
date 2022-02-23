@@ -27,6 +27,8 @@ import MDCT_Common
 from MDCT_Common import get_setting
 from MDCT_Common import set_setting
 
+ROOT = None
+
 def set_mode(v):
     set_setting('mode', v)
     MDCT_Common.save_settings()
@@ -211,6 +213,11 @@ def update_target():
 
     tk.messagebox.showinfo('更新目标数据完成', '已更新目标数据。')
     toplevel.destroy()
+
+def change_topmost():
+    set_setting('topmost', not get_setting('topmost'))
+    ROOT.attributes('-topmost', get_setting('topmost'))
+    ROOT.update()
 
 def view_help():
     webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/wiki/Home-(Simplified-Chinese)')

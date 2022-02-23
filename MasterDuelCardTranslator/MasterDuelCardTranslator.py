@@ -45,8 +45,9 @@ try:
         MDCT_Common.save_settings()
 
     root = tk.Tk()
+    MDCT_UserInterface.ROOT = root
     root.title(MDCT_Common.SHORT_TITLE)
-    root.attributes('-topmost', True)
+    root.attributes('-topmost', get_setting('topmost'))
     root.resizable(True, True)
     root.geometry(get_setting('geometry'))
     root.update()
@@ -99,15 +100,22 @@ try:
     menu.add_command(label='A+', command=font_plus)
 
     mode_menu = tk.Menu(settings_menu, tearoff=0)
+    advanced_settings_menu = tk.Menu(settings_menu, tearoff=0)
     settings_menu.add_cascade(label='当前模式', menu=mode_menu)
     settings_menu.add_separator()
     settings_menu.add_command(label='更新源数据', command=MDCT_UserInterface.update_source)
     settings_menu.add_command(label='更新目标数据', command=MDCT_UserInterface.update_target)
+    settings_menu.add_separator()
+    settings_menu.add_cascade(label='高级', menu=advanced_settings_menu)
 
     mode_menu_var = tk.IntVar(mode_menu)
     mode_menu_var.set(MDCT_Common.get_setting('mode'))
     mode_menu.add_radiobutton(label='决斗模式', var=mode_menu_var, value=0, command=MDCT_UserInterface.set_duel_mode)
     mode_menu.add_radiobutton(label='组卡模式', var=mode_menu_var, value=1, command=MDCT_UserInterface.set_deck_mode)
+
+    advanced_settings_menu_topmost_var = tk.IntVar(advanced_settings_menu)
+    advanced_settings_menu_topmost_var.set(get_setting('topmost'))
+    advanced_settings_menu.add_checkbutton(label='置于顶层', var=advanced_settings_menu_topmost_var, command=MDCT_UserInterface.change_topmost)
 
     author_menu = tk.Menu(help_menu, tearoff=0)
     help_menu.add_command(label='查看帮助', command=MDCT_UserInterface.view_help)

@@ -2,5 +2,6 @@
   "font": "\u5fae\u8f6f\u96c5\u9ed1 10 bold",
   "source_language": "eng",
   "geometry": "300x350",
-  "mode":  0
+  "mode": 0,
+  "topmost": true
 }
