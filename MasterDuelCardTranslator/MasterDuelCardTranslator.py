@@ -31,7 +31,6 @@ import pytesseract
 import MDCT_Common
 from MDCT_Common import get_setting
 from MDCT_Common import set_setting
-from MDCT_Common import get_position
 import MDCT_UserInterface
 import MDCT_CardDetailProcessUtil as CDPU
 import MDCT_TargetParser
