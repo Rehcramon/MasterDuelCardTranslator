@@ -115,7 +115,10 @@ try:
 
     advanced_settings_menu_topmost_var = tk.IntVar(advanced_settings_menu)
     advanced_settings_menu_topmost_var.set(get_setting('topmost'))
+    advanced_settings_menu_raw_text_var = tk.IntVar(advanced_settings_menu)
+    advanced_settings_menu_raw_text_var.set(get_setting('show_raw_text'))
     advanced_settings_menu.add_checkbutton(label='置于顶层', var=advanced_settings_menu_topmost_var, command=MDCT_UserInterface.change_topmost)
+    advanced_settings_menu.add_checkbutton(label='仅显示OCR结果', var=advanced_settings_menu_raw_text_var, command=MDCT_UserInterface.change_show_raw_text)
 
     author_menu = tk.Menu(help_menu, tearoff=0)
     help_menu.add_command(label='查看帮助', command=MDCT_UserInterface.view_help)
@@ -237,9 +240,31 @@ try:
         con.close()
         con1.close()
 
+    def get_card_raw_text():
+        global current_card_id
+        CDPU.setThreadStatus(True)
+        current_card_id = None
+        screenshot_result = MDCT_Common.get_screenshots_for_ocr()
+        if screenshot_result[0] == True:
+            screenshotInvertImg = ImageOps.invert(screenshot_result[1].convert('L'))
+            card_name = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'), config='--psm 7')[:-1]
+            card_name = correct_recognition_result(card_name)
+            screenshotInvertImg = ImageOps.invert(screenshot_result[2].convert('L'))
+            card_desc = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'))
+            card_desc = correct_recognition_result(card_desc)
+            raw_text = 'Name:\n{}\n\nText:\n{}'.format(card_name, card_desc)
+        else:
+            raw_text = '`masterduel` NOT FOUND'
+        if raw_text != CDPU.getText():
+            CDPU.changeCardDetail(raw_text)
+        CDPU.setThreadStatus(False)
+
     def update_card_detail():
         if(CDPU.openThread()):
-            T = threading.Thread(target=getCardDetail)
+            if not get_setting('show_raw_text'):
+                T = threading.Thread(target=getCardDetail)
+            else:
+                T = threading.Thread(target=get_card_raw_text)
             T.start()
 
         root.after(180, update_card_detail)

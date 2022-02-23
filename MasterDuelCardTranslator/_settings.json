@@ -3,5 +3,6 @@
   "source_language": "eng",
   "geometry": "300x350",
   "mode": 0,
-  "topmost": true
+  "topmost": true,
+  "show_raw_text": false
 }

@@ -82,6 +82,10 @@ class CardDetailProcessUtil:
     def getCacheByKey(key):
         return CardDetailProcessUtil.__LRUCache.get(key)
 
+    @staticmethod
+    def getPreDetailInfo():
+        return CardDetailProcessUtil.__preDetailInfo
+
 def initUtil(card):
     CardDetailProcessUtil.initUtil(card)
 
@@ -100,6 +104,8 @@ def getLRUCacheByKey(key):
 def putKeyValueInCache(k, v):
     CardDetailProcessUtil.putKVInCache(k, v)
 
+def getText():
+    return CardDetailProcessUtil.getPreDetailInfo()
 
 def dhash(image, hash_size=8):
     # Grayscale and shrink the image in one step.

@@ -216,8 +216,13 @@ def update_target():
 
 def change_topmost():
     set_setting('topmost', not get_setting('topmost'))
+    MDCT_Common.save_settings()
     ROOT.attributes('-topmost', get_setting('topmost'))
     ROOT.update()
+
+def change_show_raw_text():
+    set_setting('show_raw_text', not get_setting('show_raw_text'))
+    MDCT_Common.save_settings()
 
 def view_help():
     webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/wiki/Home-(Simplified-Chinese)')
