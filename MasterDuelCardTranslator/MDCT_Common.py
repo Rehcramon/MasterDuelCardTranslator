@@ -63,9 +63,6 @@ def save_settings():
     settings_file.write(json.dumps(SETTINGS))
     settings_file.close()
 
-def get_position():
-    return SETTINGS['position']
-
 # https://stackoverflow.com/questions/19695214/screenshot-of-inactive-window-printwindow-win32gui
 # code by hazzey
 def get_screenshot(window_title):
