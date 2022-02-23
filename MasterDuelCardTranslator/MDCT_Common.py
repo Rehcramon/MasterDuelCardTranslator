@@ -49,7 +49,7 @@ SETTINGS = None
 def load_settings(filename = 'settings.json'):
     global SETTINGS
     settings_file = open(filename, 'r')
-    SETTINGS = json.loads(settings_file.readline())
+    SETTINGS = json.loads(' '.join(settings_file.readlines()))
     settings_file.close()
 
 def get_setting(key):
@@ -95,16 +95,33 @@ def get_screenshots_for_ocr():
     ret = get_screenshot('masterduel')
     if ret[0] == False:
         return (False, None, None)
-    name_image = ret[1]['screenshot'].crop((
-        round(40 / 1920 * ret[1]['w']),
-        round(150 / 1080 * ret[1]['h']),
-        round(348 / 1920 * ret[1]['w']),
-        round(190 / 1080 * ret[1]['h'])
-    ))
-    text_image = ret[1]['screenshot'].crop((
-        round(30 / 1920 * ret[1]['w']),
-        round(501 / 1080 * ret[1]['h']),
-        round(385 / 1920 * ret[1]['w']),
-        round(851 / 1080 * ret[1]['h'])
-    ))
+    # Duel Mode
+    mode = get_setting('mode')
+    if mode == 0:
+        name_image = ret[1]['screenshot'].crop((
+            round(40 / 1920 * ret[1]['w']),
+            round(150 / 1080 * ret[1]['h']),
+            round(348 / 1920 * ret[1]['w']),
+            round(190 / 1080 * ret[1]['h'])
+        ))
+        text_image = ret[1]['screenshot'].crop((
+            round(30 / 1920 * ret[1]['w']),
+            round(501 / 1080 * ret[1]['h']),
+            round(385 / 1920 * ret[1]['w']),
+            round(851 / 1080 * ret[1]['h'])
+        ))
+    # Deck Mode
+    if mode == 1:
+        name_image = ret[1]['screenshot'].crop((
+            round(58 / 1920 * ret[1]['w']),
+            round(120 / 1080 * ret[1]['h']),
+            round(404 / 1920 * ret[1]['w']),
+            round(160 / 1080 * ret[1]['h'])
+        ))
+        text_image = ret[1]['screenshot'].crop((
+            round(54 / 1920 * ret[1]['w']),
+            round(465 / 1080 * ret[1]['h']),
+            round(442 / 1920 * ret[1]['w']),
+            round(758 / 1080 * ret[1]['h'])
+        ))
     return (True, name_image, text_image)

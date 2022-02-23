@@ -27,6 +27,16 @@ import MDCT_Common
 from MDCT_Common import get_setting
 from MDCT_Common import set_setting
 
+def set_mode(v):
+    set_setting('mode', v)
+    MDCT_Common.save_settings()
+
+def set_duel_mode():
+    set_mode(0)
+
+def set_deck_mode():
+    set_mode(1)
+
 def update_source():
     ret = tk.messagebox.askquestion('更新源数据', '''\
 要更新源数据吗？此过程需要访问网络，可能需要若干分钟。

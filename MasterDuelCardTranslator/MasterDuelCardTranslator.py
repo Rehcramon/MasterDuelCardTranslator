@@ -98,8 +98,16 @@ try:
     menu.add_command(label='A-', command=font_minus)
     menu.add_command(label='A+', command=font_plus)
 
+    mode_menu = tk.Menu(settings_menu, tearoff=0)
+    settings_menu.add_cascade(label='当前模式', menu=mode_menu)
+    settings_menu.add_separator()
     settings_menu.add_command(label='更新源数据', command=MDCT_UserInterface.update_source)
     settings_menu.add_command(label='更新目标数据', command=MDCT_UserInterface.update_target)
+
+    mode_menu_var = tk.IntVar(mode_menu)
+    mode_menu_var.set(MDCT_Common.get_setting('mode'))
+    mode_menu.add_radiobutton(label='决斗模式', var=mode_menu_var, value=0, command=MDCT_UserInterface.set_duel_mode)
+    mode_menu.add_radiobutton(label='组卡模式', var=mode_menu_var, value=1, command=MDCT_UserInterface.set_deck_mode)
 
     author_menu = tk.Menu(help_menu, tearoff=0)
     help_menu.add_command(label='查看帮助', command=MDCT_UserInterface.view_help)
