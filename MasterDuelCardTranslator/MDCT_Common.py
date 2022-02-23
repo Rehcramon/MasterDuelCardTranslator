@@ -16,7 +16,12 @@
 
 import json
 
-VERSION = '1.3'
+import win32gui
+import win32ui
+from ctypes import windll
+from PIL import Image
+
+VERSION = '2.0'
 
 SHORT_TITLE = 'MDCT v{}'.format(VERSION)
 
@@ -32,6 +37,12 @@ INFO = '''\
     Version {}
     https://github.com/Rehcramon/MasterDuelCardTranslator \
 '''.format(VERSION)
+
+WELCOME_MESSAGE = '''\
+
+　　欢迎使用Master Duel Card Translator。
+\
+'''
 
 SETTINGS = None
 
@@ -54,3 +65,49 @@ def save_settings():
 
 def get_position():
     return SETTINGS['position']
+
+# https://stackoverflow.com/questions/19695214/screenshot-of-inactive-window-printwindow-win32gui
+# code by hazzey
+def get_screenshot(window_title):
+    ret = (False, None)
+    hwnd = win32gui.FindWindow(None, window_title)
+    if hwnd == 0:
+        return ret
+    left, top, right, bot = win32gui.GetClientRect(hwnd)
+    w = right - left
+    h = bot - top
+    hwndDC = win32gui.GetWindowDC(hwnd)
+    mfcDC  = win32ui.CreateDCFromHandle(hwndDC)
+    saveDC = mfcDC.CreateCompatibleDC()
+    saveBitMap = win32ui.CreateBitmap()
+    saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
+    saveDC.SelectObject(saveBitMap)
+    result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 3)
+    if result == 1:
+        bmpinfo = saveBitMap.GetInfo()
+        bmpstr = saveBitMap.GetBitmapBits(True)
+        im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
+        ret = (True, {'screenshot': im, 'w': w, 'h': h})
+    win32gui.DeleteObject(saveBitMap.GetHandle())
+    saveDC.DeleteDC()
+    mfcDC.DeleteDC()
+    win32gui.ReleaseDC(hwnd, hwndDC)
+    return ret
+
+def get_screenshots_for_ocr():
+    ret = get_screenshot('masterduel')
+    if ret[0] == False:
+        return (False, None, None)
+    name_image = ret[1]['screenshot'].crop((
+        round(40 / 1920 * ret[1]['w']),
+        round(150 / 1080 * ret[1]['h']),
+        round(348 / 1920 * ret[1]['w']),
+        round(190 / 1080 * ret[1]['h'])
+    ))
+    text_image = ret[1]['screenshot'].crop((
+        round(30 / 1920 * ret[1]['w']),
+        round(501 / 1080 * ret[1]['h']),
+        round(385 / 1920 * ret[1]['w']),
+        round(851 / 1080 * ret[1]['h'])
+    ))
+    return (True, name_image, text_image)

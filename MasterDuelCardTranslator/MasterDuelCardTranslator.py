@@ -24,7 +24,6 @@ import tkinter.scrolledtext
 import tkinter.messagebox
 import threading
 
-import pyautogui
 from PIL import Image
 from PIL import ImageOps
 import pytesseract
@@ -50,19 +49,7 @@ try:
     root.title(MDCT_Common.SHORT_TITLE)
     root.attributes('-topmost', True)
     root.resizable(True, True)
-    root.update()
-
-    try:
-        root.geometry(get_setting('geometry'))
-    except:
-        root.geometry('1x1+0+0')
-        MDCT_UserInterface.setup_position()
-        try:
-            root.geometry(get_setting('geometry'))
-        except:
-            root.destroy()
-            raise Exception('Please setup position before use.')
-    
+    root.geometry(get_setting('geometry'))
     root.update()
 
     if (not os.path.isfile('source.cdb')) or (not os.path.isfile('search.db')):
@@ -112,8 +99,6 @@ try:
     menu.add_command(label='A-', command=font_minus)
     menu.add_command(label='A+', command=font_plus)
 
-    settings_menu.add_command(label='配置文字区域', command=MDCT_UserInterface.setup_position)
-    settings_menu.add_separator()
     settings_menu.add_command(label='更新源数据', command=MDCT_UserInterface.update_source)
     settings_menu.add_command(label='更新目标数据', command=MDCT_UserInterface.update_target)
 
@@ -135,11 +120,10 @@ try:
     card_display_text = tk.scrolledtext.ScrolledText(root, width=1, height=1, font=get_setting('font'))
     CDPU.initUtil(card_display_text)
 
-    current_card_id = 0
-
-    CDPU.setArgs(current_card_id)
+    current_card_id = None
 
     def getCardDetail():
+        global current_card_id
         CDPU.setThreadStatus(True)
 
         con_source = sqlite3.connect('source.cdb')
@@ -152,65 +136,39 @@ try:
         con1 = sqlite3.connect('ygocore.cdb')
         cursor1 = con1.cursor()
 
-        current_card_id = CDPU.getCurrent_card_id()
-
-        screenshotImg = pyautogui.screenshot(region=(get_position()['tx'], get_position()['ty'], get_position()['tw'], get_position()['th']))
-
-        # add LRU Cache Before OCR. Improved performance in most scenarios
-        imgMD5 = CDPU.dhash(screenshotImg)
-        imgCache = CDPU.getLRUCacheByKey(imgMD5)
-        if (imgCache == None):
-            screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
-            card_desc = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'))
-            card_desc = correct_recognition_result(card_desc)
-            card_desc = card_desc.replace(' ', '').replace('"', '""')
+        screenshot_result = MDCT_Common.get_screenshots_for_ocr()
+        if screenshot_result[0] == False:
+            if current_card_id != -2:
+                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '\n　　未检测到标题为“masterduel”的窗口。请启动Yu-Gi-Oh! Master Duel。')
+                current_card_id = -2
         else:
-            card_desc = imgCache
+            if current_card_id == None or current_card_id == -2:
+                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '\n　　未能匹配到任何卡片。')
+                current_card_id = -1
+            screenshotImg = screenshot_result[2]
+            # add LRU Cache Before OCR. Improved performance in most scenarios
+            imgMD5 = CDPU.dhash(screenshotImg)
+            imgCache = CDPU.getLRUCacheByKey(imgMD5)
+            if (imgCache == None):
+                screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
+                card_desc = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'))
+                card_desc = correct_recognition_result(card_desc)
+                card_desc = card_desc.replace(' ', '').replace('"', '""')
+            else:
+                card_desc = imgCache
 
-        if len(card_desc) >= 10:
-            CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), card_desc)
+            if len(card_desc) >= 10:
+                CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), card_desc)
 
-            card_desc_work_list = card_desc.split('\n')
-            card_desc_found = False
-            card_desc_work_exchange_buffer = ''
-            for i in range(len(card_desc_work_list)):
-                card_desc_work = ''
-                for card_desc_line in card_desc_work_list:
-                    card_desc_work += card_desc_line
-                    sql = 'SELECT id, name FROM data WHERE desc LIKE "{}%"'.format(card_desc_work)
-                    res = cursor.execute(sql).fetchall()
-                    if len(res) == 1:
-                        if res[0][0] != current_card_id:
-                            current_card_id = res[0][0]
-                            sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
-                            res1 = cursor1.execute(sql1).fetchall()
-                            if len(res1) == 1:
-                                sql_target_data = 'SELECT id, ot, alias, setcode, type, atk, def, level, race, attribute, category FROM datas WHERE id = {} LIMIT 1'.format(res[0][0])
-                                res_target_data = cursor1.execute(sql_target_data).fetchall()
-                                card_data_string = MDCT_TargetParser.get_card_data_string(res_target_data[0])
-                                CDPU.changeCardDetail(
-                                    '{}\n{}\n{}\n{}'.format(res1[0][0], res[0][1], card_data_string, res1[0][1]))
-                        card_desc_found = True
-                        break
-                if card_desc_found == True:
-                    break
-                elif i == 0:
-                    screenshotImg = pyautogui.screenshot(region=(get_position()['nx'], get_position()['ny'], get_position()['nw'], get_position()['nh']))
-                    # add LRU Cache Before OCR. Improved performance in most scenarios
-                    imgMD5 = CDPU.dhash(screenshotImg)
-                    imgCache = CDPU.getLRUCacheByKey(imgMD5)
-                    if (imgCache == None):
-                        screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
-                        card_name = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'), config='--psm 7')[:-1]
-                        card_name = correct_recognition_result(card_name)
-                    else:
-                        card_name = imgCache
-                    if len(card_name) >= 3:
-                        sql_source = 'SELECT id, name FROM data WHERE name = "{}"'.format(card_name.replace('"', '""'))
-                        res = cursor_source.execute(sql_source).fetchall()
-                        if len(res) != 1 and len(card_name) >= 10:
-                            sql_source = 'SELECT id, name FROM data WHERE name LIKE "%{}%"'.format(card_name[1:-1].replace('"', '""'))
-                            res = cursor_source.execute(sql_source).fetchall()
+                card_desc_work_list = card_desc.split('\n')
+                card_desc_found = False
+                card_desc_work_exchange_buffer = ''
+                for i in range(len(card_desc_work_list)):
+                    card_desc_work = ''
+                    for card_desc_line in card_desc_work_list:
+                        card_desc_work += card_desc_line
+                        sql = 'SELECT id, name FROM data WHERE desc LIKE "{}%"'.format(card_desc_work)
+                        res = cursor.execute(sql).fetchall()
                         if len(res) == 1:
                             if res[0][0] != current_card_id:
                                 current_card_id = res[0][0]
@@ -222,13 +180,44 @@ try:
                                     card_data_string = MDCT_TargetParser.get_card_data_string(res_target_data[0])
                                     CDPU.changeCardDetail(
                                         '{}\n{}\n{}\n{}'.format(res1[0][0], res[0][1], card_data_string, res1[0][1]))
+                            card_desc_found = True
                             break
-                if i > 0:
-                    card_desc_work_list[i - 1] = card_desc_work_exchange_buffer
-                card_desc_work_exchange_buffer = card_desc_work_list[i]
-                card_desc_work_list[i] = '%'
+                    if card_desc_found == True:
+                        break
+                    elif i == 0:
+                        screenshotImg = screenshot_result[1]
+                        # add LRU Cache Before OCR. Improved performance in most scenarios
+                        imgMD5 = CDPU.dhash(screenshotImg)
+                        imgCache = CDPU.getLRUCacheByKey(imgMD5)
+                        if (imgCache == None):
+                            screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
+                            card_name = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'), config='--psm 7')[:-1]
+                            card_name = correct_recognition_result(card_name)
+                        else:
+                            card_name = imgCache
+                        if len(card_name) >= 3:
+                            sql_source = 'SELECT id, name FROM data WHERE name = "{}"'.format(card_name.replace('"', '""'))
+                            res = cursor_source.execute(sql_source).fetchall()
+                            if len(res) != 1 and len(card_name) >= 10:
+                                sql_source = 'SELECT id, name FROM data WHERE name LIKE "%{}%"'.format(card_name[1:-1].replace('"', '""'))
+                                res = cursor_source.execute(sql_source).fetchall()
+                            if len(res) == 1:
+                                if res[0][0] != current_card_id:
+                                    current_card_id = res[0][0]
+                                    sql1 = 'SELECT name, desc FROM texts WHERE id = {} LIMIT 1'.format(res[0][0])
+                                    res1 = cursor1.execute(sql1).fetchall()
+                                    if len(res1) == 1:
+                                        sql_target_data = 'SELECT id, ot, alias, setcode, type, atk, def, level, race, attribute, category FROM datas WHERE id = {} LIMIT 1'.format(res[0][0])
+                                        res_target_data = cursor1.execute(sql_target_data).fetchall()
+                                        card_data_string = MDCT_TargetParser.get_card_data_string(res_target_data[0])
+                                        CDPU.changeCardDetail(
+                                            '{}\n{}\n{}\n{}'.format(res1[0][0], res[0][1], card_data_string, res1[0][1]))
+                                break
+                    if i > 0:
+                        card_desc_work_list[i - 1] = card_desc_work_exchange_buffer
+                    card_desc_work_exchange_buffer = card_desc_work_list[i]
+                    card_desc_work_list[i] = '%'
         CDPU.setThreadStatus(False)
-        CDPU.setArgs(current_card_id)
         con_source.close()
         con.close()
         con1.close()
