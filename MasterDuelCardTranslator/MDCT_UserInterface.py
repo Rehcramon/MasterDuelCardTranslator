@@ -50,7 +50,7 @@ def update_source():
     toplevel = tk.Toplevel()
     toplevel.title('更新源数据')
     toplevel.geometry('300x200')
-    toplevel.attributes('-topmost', True)
+    toplevel.attributes('-topmost', get_setting('topmost'))
     toplevel.update()
 
     text_common = '''\
@@ -177,7 +177,7 @@ def update_target():
     toplevel = tk.Toplevel()
     toplevel.title('更新目标数据')
     toplevel.geometry('300x200')
-    toplevel.attributes('-topmost', True)
+    toplevel.attributes('-topmost', get_setting('topmost'))
     toplevel.update()
 
     text = tk.scrolledtext.ScrolledText(toplevel, width=10000, height=10000, font=get_setting('font'))
@@ -275,7 +275,7 @@ def check_update():
     toplevel = tk.Toplevel()
     toplevel.title('正在更新MDCT')
     toplevel.geometry('300x200')
-    toplevel.attributes('-topmost', True)
+    toplevel.attributes('-topmost', get_setting('topmost'))
     toplevel.update()
 
     text = tk.scrolledtext.ScrolledText(toplevel, width=10000, height=10000, font=get_setting('font'))
