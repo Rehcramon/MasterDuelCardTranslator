@@ -129,6 +129,7 @@ try:
     help_menu.add_cascade(label='联系作者', menu=author_menu)
     help_menu.add_separator()
     help_menu.add_command(label='关于 {}'.format(MDCT_Common.SHORT_TITLE), command=MDCT_UserInterface.about_messagebox)
+    help_menu.add_command(label='许可证全文', command=MDCT_UserInterface.license_text)
 
     author_menu.add_command(label='Rehcramon@GitHub', command=MDCT_UserInterface.browse_rehcramon_github)
     author_menu.add_command(label='Rehcramon@bilibili', command=MDCT_UserInterface.browse_rehcramon_bilibili)

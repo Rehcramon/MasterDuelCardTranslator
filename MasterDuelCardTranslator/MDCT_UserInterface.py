@@ -327,3 +327,15 @@ def browse_llforever_github():
 
 def about_messagebox():
     tk.messagebox.showinfo('关于 '+MDCT_Common.SHORT_TITLE, MDCT_Common.INFO)
+
+def license_text():
+    toplevel = tk.Toplevel(ROOT)
+    toplevel.title('GNU General Public License v3.0')
+    toplevel.geometry('650x700')
+    toplevel.attributes('-topmost', get_setting('topmost'))
+    text = tk.scrolledtext.ScrolledText(toplevel, width=10000, height=10000, font=get_setting('font'))
+    text.pack()
+    text.insert(tk.INSERT, MDCT_Common.LICENSE)
+    text.config(state=tk.DISABLED)
+    toplevel.update()
+    toplevel.mainloop()
