@@ -225,6 +225,10 @@ def change_show_raw_text():
     set_setting('show_raw_text', not get_setting('show_raw_text'))
     MDCT_Common.save_settings()
 
+def change_pause():
+    set_setting('pause', not get_setting('pause'))
+    MDCT_Common.save_settings()
+
 def view_help():
     webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/wiki/Home-(Simplified-Chinese)')
 

@@ -117,8 +117,11 @@ try:
     advanced_settings_menu_topmost_var.set(get_setting('topmost'))
     advanced_settings_menu_raw_text_var = tk.IntVar(advanced_settings_menu)
     advanced_settings_menu_raw_text_var.set(get_setting('show_raw_text'))
+    advanced_settings_menu_pause_var = tk.IntVar(advanced_settings_menu)
+    advanced_settings_menu_pause_var.set(get_setting('pause'))
     advanced_settings_menu.add_checkbutton(label='置于顶层', var=advanced_settings_menu_topmost_var, command=MDCT_UserInterface.change_topmost)
     advanced_settings_menu.add_checkbutton(label='仅显示OCR结果', var=advanced_settings_menu_raw_text_var, command=MDCT_UserInterface.change_show_raw_text)
+    advanced_settings_menu.add_checkbutton(label='暂停执行OCR及后续步骤', var=advanced_settings_menu_pause_var, command=MDCT_UserInterface.change_pause)
 
     author_menu = tk.Menu(help_menu, tearoff=0)
     help_menu.add_command(label='查看帮助', command=MDCT_UserInterface.view_help)
@@ -261,14 +264,14 @@ try:
         CDPU.setThreadStatus(False)
 
     def update_card_detail():
-        if(CDPU.openThread()):
+        if (not get_setting('pause')) and CDPU.openThread():
             if not get_setting('show_raw_text'):
                 T = threading.Thread(target=getCardDetail)
             else:
                 T = threading.Thread(target=get_card_raw_text)
             T.start()
-
         root.after(180, update_card_detail)
+
     update_card_detail()
     
     root.mainloop()

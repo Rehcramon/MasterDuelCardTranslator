@@ -4,5 +4,6 @@
   "geometry": "300x350",
   "mode": 0,
   "topmost": true,
-  "show_raw_text": false
+  "show_raw_text": false,
+  "pause": false
 }
