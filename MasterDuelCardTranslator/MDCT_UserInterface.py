@@ -18,6 +18,7 @@ import requests
 import sqlite3
 import json
 import os
+import sys
 import subprocess
 import webbrowser
 import tkinter as tk
@@ -231,6 +232,14 @@ def browse_new_issue():
     webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/issues/new/choose')
 
 def check_update():
+    exec = sys.argv[0].split('\\')[-1]
+    if exec != 'MasterDuelCardTranslator.exe':
+        tk.messagebox.showerror('检查更新失败', '''\
+似乎MDCT并不是以可执行文件的形式运行的。
+如果这是使用源代码运行的，请使用git pull等方式更新源代码。
+感谢理解与支持。\
+''')
+        return
     try:
         latest = requests.get('https://api.github.com/repos/Rehcramon/MasterDuelCardTranslator/releases/latest', headers={'Accept': 'application/vnd.github.v3+json'}).json()
     except:
