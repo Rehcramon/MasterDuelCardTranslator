@@ -115,11 +115,14 @@ try:
 
     advanced_settings_menu_topmost_var = tk.IntVar(advanced_settings_menu)
     advanced_settings_menu_topmost_var.set(get_setting('topmost'))
+    advanced_settings_menu_save_screenshots_var = tk.IntVar(advanced_settings_menu)
+    advanced_settings_menu_save_screenshots_var.set(get_setting('save_screenshots'))
     advanced_settings_menu_raw_text_var = tk.IntVar(advanced_settings_menu)
     advanced_settings_menu_raw_text_var.set(get_setting('show_raw_text'))
     advanced_settings_menu_pause_var = tk.IntVar(advanced_settings_menu)
     advanced_settings_menu_pause_var.set(get_setting('pause'))
     advanced_settings_menu.add_checkbutton(label='置于顶层', var=advanced_settings_menu_topmost_var, command=MDCT_UserInterface.change_topmost)
+    advanced_settings_menu.add_checkbutton(label='保存截图', var=advanced_settings_menu_save_screenshots_var, command=MDCT_UserInterface.change_save_screenshots)
     advanced_settings_menu.add_checkbutton(label='仅显示OCR结果', var=advanced_settings_menu_raw_text_var, command=MDCT_UserInterface.change_show_raw_text)
     advanced_settings_menu.add_checkbutton(label='暂停执行OCR及后续步骤', var=advanced_settings_menu_pause_var, command=MDCT_UserInterface.change_pause)
 

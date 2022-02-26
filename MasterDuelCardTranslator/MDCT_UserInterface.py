@@ -229,6 +229,10 @@ def change_pause():
     set_setting('pause', not get_setting('pause'))
     MDCT_Common.save_settings()
 
+def change_save_screenshots():
+    set_setting('save_screenshots', not get_setting('save_screenshots'))
+    MDCT_Common.save_settings()
+
 def view_help():
     webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/wiki/Home-(Simplified-Chinese)')
 

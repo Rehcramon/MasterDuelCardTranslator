@@ -806,4 +806,8 @@ def get_screenshots_for_ocr():
             round(442 / 1920 * ret[1]['w']),
             round(758 / 1080 * ret[1]['h'])
         ))
+    if get_setting('save_screenshots'):
+        ret[1]['screenshot'].save('screenshot_full.png')
+        name_image.save('screenshot_name.png')
+        text_image.save('screenshot_text.png')
     return (True, name_image, text_image)
