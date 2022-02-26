@@ -113,6 +113,7 @@ try:
     mode_menu.add_radiobutton(label='决斗模式', var=mode_menu_var, value=0, command=MDCT_UserInterface.set_duel_mode)
     mode_menu.add_radiobutton(label='组卡模式', var=mode_menu_var, value=1, command=MDCT_UserInterface.set_deck_mode)
 
+    capture_method_menu = tk.Menu(advanced_settings_menu, tearoff=0)
     advanced_settings_menu_topmost_var = tk.IntVar(advanced_settings_menu)
     advanced_settings_menu_topmost_var.set(get_setting('topmost'))
     advanced_settings_menu_save_screenshots_var = tk.IntVar(advanced_settings_menu)
@@ -122,9 +123,25 @@ try:
     advanced_settings_menu_pause_var = tk.IntVar(advanced_settings_menu)
     advanced_settings_menu_pause_var.set(get_setting('pause'))
     advanced_settings_menu.add_checkbutton(label='置于顶层', var=advanced_settings_menu_topmost_var, command=MDCT_UserInterface.change_topmost)
+    advanced_settings_menu.add_cascade(label='捕获截图方法', menu=capture_method_menu)
     advanced_settings_menu.add_checkbutton(label='保存截图', var=advanced_settings_menu_save_screenshots_var, command=MDCT_UserInterface.change_save_screenshots)
     advanced_settings_menu.add_checkbutton(label='仅显示OCR结果', var=advanced_settings_menu_raw_text_var, command=MDCT_UserInterface.change_show_raw_text)
     advanced_settings_menu.add_checkbutton(label='暂停执行OCR及后续步骤', var=advanced_settings_menu_pause_var, command=MDCT_UserInterface.change_pause)
+
+    capture_method_menu_var = tk.StringVar(capture_method_menu)
+    capture_method_menu_var.set(get_setting('capture_method'))
+    capture_method_menu.add_radiobutton(
+        label='识别并绘制窗口',
+        var=capture_method_menu_var,
+        value=MDCT_Common.CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW,
+        command=MDCT_UserInterface.set_capture_method_findwindow_printwindow
+    )
+    capture_method_menu.add_radiobutton(
+        label='识别窗口后截图',
+        var=capture_method_menu_var,
+        value=MDCT_Common.CAPTURE_METHOD_FINDWINDOW_SCREENSHOT,
+        command=MDCT_UserInterface.set_capture_method_findwindow_screenshot
+    )
 
     author_menu = tk.Menu(help_menu, tearoff=0)
     help_menu.add_command(label='查看帮助', command=MDCT_UserInterface.view_help)
@@ -164,15 +181,22 @@ try:
         screenshot_result = MDCT_Common.get_screenshots_for_ocr()
         if screenshot_result[0] == -3:
             if current_card_id != -3:
-                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '\n　　未检测到标题为“masterduel”的窗口。请启动Yu-Gi-Oh! Master Duel。')
+                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '　　未检测到标题为“masterduel”的窗口。请启动Yu-Gi-Oh! Master Duel。')
                 current_card_id = -3
         elif screenshot_result[0] == -2:
             if current_card_id != -2:
-                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '\n　　虽然检测到了标题为“masterduel”的窗口，但是截图失败。如果窗口被最小化，则可能出现该情况。')
+                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '''\
+　　虽然检测到了标题为“masterduel”的窗口，但是捕获截图失败。
+　　如果窗口被最小化，则可能出现该情况。
+　　如果窗口正常显示，则可以将捕获截图方法修改为“识别窗口后截图”来尝试解决该问题。请依次选择“设置”->“高级”->“捕获截图方法”进行操作。\
+''')
                 current_card_id = -2
         else:
             if current_card_id == None or current_card_id < -1:
-                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '\n　　未能匹配到任何卡片。')
+                error_message = MDCT_Common.WELCOME_MESSAGE + '　　未能匹配到任何卡片。'
+                if get_setting('capture_method') == MDCT_Common.CAPTURE_METHOD_FINDWINDOW_SCREENSHOT:
+                    error_message += '\n　　请不要遮挡卡名和卡文区域。'
+                CDPU.changeCardDetail(error_message)
                 current_card_id = -1
             screenshotImg = screenshot_result[2]
             # add LRU Cache Before OCR. Improved performance in most scenarios

@@ -20,8 +20,9 @@ import win32gui
 import win32ui
 from ctypes import windll
 from PIL import Image
+import pyautogui
 
-VERSION = '2.1'
+VERSION = '2.2'
 
 SHORT_TITLE = 'MDCT v{}'.format(VERSION)
 
@@ -719,8 +720,12 @@ Public License instead of this License.  But first, please read
 WELCOME_MESSAGE = '''\
 
 　　欢迎使用Master Duel Card Translator。
+
 \
 '''
+
+CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW = 'FindWindow & PrintWindow'
+CAPTURE_METHOD_FINDWINDOW_SCREENSHOT = 'FindWindow & Screenshot'
 
 SETTINGS = None
 
@@ -750,28 +755,36 @@ def get_screenshot(window_title):
     left, top, right, bot = win32gui.GetClientRect(hwnd)
     w = right - left
     h = bot - top
-    dpi = windll.user32.GetDpiForWindow(hwnd)
-    zoom_ratio = dpi / 96
-    w = round(w * zoom_ratio)
-    h = round(h * zoom_ratio)
-    hwndDC = win32gui.GetWindowDC(hwnd)
-    mfcDC  = win32ui.CreateDCFromHandle(hwndDC)
-    saveDC = mfcDC.CreateCompatibleDC()
-    saveBitMap = win32ui.CreateBitmap()
-    saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
-    saveDC.SelectObject(saveBitMap)
-    result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 3)
-    if result != 0:
-        bmpinfo = saveBitMap.GetInfo()
-        bmpstr = saveBitMap.GetBitmapBits(True)
-        im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
-        ret = (0, {'screenshot': im, 'w': w, 'h': h})
-    else:
-        ret = (-2, None)
-    win32gui.DeleteObject(saveBitMap.GetHandle())
-    saveDC.DeleteDC()
-    mfcDC.DeleteDC()
-    win32gui.ReleaseDC(hwnd, hwndDC)
+    if get_setting('capture_method') == CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW:
+        dpi = windll.user32.GetDpiForWindow(hwnd)
+        zoom_ratio = dpi / 96
+        w = round(w * zoom_ratio)
+        h = round(h * zoom_ratio)
+        hwndDC = win32gui.GetWindowDC(hwnd)
+        mfcDC  = win32ui.CreateDCFromHandle(hwndDC)
+        saveDC = mfcDC.CreateCompatibleDC()
+        saveBitMap = win32ui.CreateBitmap()
+        saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
+        saveDC.SelectObject(saveBitMap)
+        result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 3)
+        if result != 0:
+            bmpinfo = saveBitMap.GetInfo()
+            bmpstr = saveBitMap.GetBitmapBits(True)
+            im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
+            ret = (0, {'screenshot': im, 'w': w, 'h': h})
+        else:
+            ret = (-2, None)
+        win32gui.DeleteObject(saveBitMap.GetHandle())
+        saveDC.DeleteDC()
+        mfcDC.DeleteDC()
+        win32gui.ReleaseDC(hwnd, hwndDC)
+    if get_setting('capture_method') == CAPTURE_METHOD_FINDWINDOW_SCREENSHOT:
+        if w == 0 or h == 0:
+            ret = (-2, None)
+        else:
+            xy = win32gui.ClientToScreen(hwnd, (left, top))
+            im = pyautogui.screenshot(region=(xy[0], xy[1], w, h))
+            ret = (0, {'screenshot': im, 'w': w, 'h': h})
     return ret
 
 def get_screenshots_for_ocr():

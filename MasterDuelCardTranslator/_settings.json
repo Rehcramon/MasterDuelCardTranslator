@@ -6,5 +6,6 @@
   "topmost": true,
   "show_raw_text": false,
   "pause": false,
-  "save_screenshots": false
+  "save_screenshots": false,
+  "capture_method": "FindWindow & PrintWindow"
 }

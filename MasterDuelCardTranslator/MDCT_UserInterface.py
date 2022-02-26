@@ -221,6 +221,16 @@ def change_topmost():
     ROOT.attributes('-topmost', get_setting('topmost'))
     ROOT.update()
 
+def set_capture_method(v):
+    set_setting('capture_method', v)
+    MDCT_Common.save_settings()
+
+def set_capture_method_findwindow_printwindow():
+    set_capture_method(MDCT_Common.CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW)
+
+def set_capture_method_findwindow_screenshot():
+    set_capture_method(MDCT_Common.CAPTURE_METHOD_FINDWINDOW_SCREENSHOT)
+
 def change_show_raw_text():
     set_setting('show_raw_text', not get_setting('show_raw_text'))
     MDCT_Common.save_settings()
