@@ -162,12 +162,16 @@ try:
         cursor1 = con1.cursor()
 
         screenshot_result = MDCT_Common.get_screenshots_for_ocr()
-        if screenshot_result[0] == False:
-            if current_card_id != -2:
+        if screenshot_result[0] == -3:
+            if current_card_id != -3:
                 CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '\n　　未检测到标题为“masterduel”的窗口。请启动Yu-Gi-Oh! Master Duel。')
+                current_card_id = -3
+        elif screenshot_result[0] == -2:
+            if current_card_id != -2:
+                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '\n　　虽然检测到了标题为“masterduel”的窗口，但是截图失败。\n请帮忙反馈这一现象，谢谢支持。')
                 current_card_id = -2
         else:
-            if current_card_id == None or current_card_id == -2:
+            if current_card_id == None or current_card_id < -1:
                 CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '\n　　未能匹配到任何卡片。')
                 current_card_id = -1
             screenshotImg = screenshot_result[2]

@@ -21,7 +21,7 @@ import win32ui
 from ctypes import windll
 from PIL import Image
 
-VERSION = '2.0'
+VERSION = '2.1'
 
 SHORT_TITLE = 'MDCT v{}'.format(VERSION)
 
@@ -744,10 +744,9 @@ def save_settings():
 # https://stackoverflow.com/questions/19695214/screenshot-of-inactive-window-printwindow-win32gui
 # code by hazzey
 def get_screenshot(window_title):
-    ret = (False, None)
     hwnd = win32gui.FindWindow(None, window_title)
     if hwnd == 0:
-        return ret
+        return (-3, None)
     left, top, right, bot = win32gui.GetClientRect(hwnd)
     w = right - left
     h = bot - top
@@ -766,7 +765,9 @@ def get_screenshot(window_title):
         bmpinfo = saveBitMap.GetInfo()
         bmpstr = saveBitMap.GetBitmapBits(True)
         im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
-        ret = (True, {'screenshot': im, 'w': w, 'h': h})
+        ret = (0, {'screenshot': im, 'w': w, 'h': h})
+    else:
+        ret = (-2, None)
     win32gui.DeleteObject(saveBitMap.GetHandle())
     saveDC.DeleteDC()
     mfcDC.DeleteDC()
@@ -775,8 +776,8 @@ def get_screenshot(window_title):
 
 def get_screenshots_for_ocr():
     ret = get_screenshot('masterduel')
-    if ret[0] == False:
-        return (False, None, None)
+    if ret[0] != 0:
+        return (ret[0], None, None)
     mode = get_setting('mode')
     # Duel Mode
     if mode == 0:
@@ -810,4 +811,4 @@ def get_screenshots_for_ocr():
         ret[1]['screenshot'].save('screenshot_full.png')
         name_image.save('screenshot_name.png')
         text_image.save('screenshot_text.png')
-    return (True, name_image, text_image)
+    return (0, name_image, text_image)
