@@ -751,6 +751,10 @@ def get_screenshot(window_title):
     left, top, right, bot = win32gui.GetClientRect(hwnd)
     w = right - left
     h = bot - top
+    dpi = windll.user32.GetDpiForWindow(hwnd)
+    zoom_ratio = dpi / 96
+    w = round(w * zoom_ratio)
+    h = round(h * zoom_ratio)
     hwndDC = win32gui.GetWindowDC(hwnd)
     mfcDC  = win32ui.CreateDCFromHandle(hwndDC)
     saveDC = mfcDC.CreateCompatibleDC()
