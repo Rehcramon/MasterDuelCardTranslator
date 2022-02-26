@@ -115,6 +115,8 @@ def get_card_data_string(e):
     ret_str = '[' + ']['.join(l) + ']'
     if (TYPE_ENUM_TO_ID['TYPE_MONSTER'] & o['type']) > 0:
         ret_str += '[{}属性][{}族]'.format(ATTRIBUTE_ID_TO_TEXT[o['attribute']], RACE_ID_TO_TEXT[o['race']])
+        if o['atk'] == -2:
+            o['atk'] = '?'
         if (TYPE_ENUM_TO_ID['TYPE_LINK'] & o['type']) > 0:
             link_value = 0
             def_tmp = o['def']
@@ -124,6 +126,8 @@ def get_card_data_string(e):
                 def_tmp >>= 1
             ret_str += '[LINK-{}]\n[ATK/{}]'.format(link_value, o['atk'])
         else:
+            if o['def'] == -2:
+                o['def'] = '?'
             if (TYPE_ENUM_TO_ID['TYPE_XYZ'] & o['type']) > 0:
                 ret_str += '[Rank {}]'.format(o['level'] & 0xFFFF)
             else:
