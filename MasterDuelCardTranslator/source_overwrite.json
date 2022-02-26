@@ -28,5 +28,11 @@
 		"name": "Maha Vailo",
 		"type": "Effect Monster",
 		"desc": "Gains 500 ATK for each Equip Card equipped to this card."
+	},
+	{
+		"id": 69448290,
+		"name": "Mist Valley Thunderbird",
+		"type": "Effect Monster",
+		"desc": "If this face-up card on the field returns to the hand: Special Summon it, but it cannot attack this turn."
 	}
 ]
