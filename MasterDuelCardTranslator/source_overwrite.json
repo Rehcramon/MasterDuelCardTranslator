@@ -22,5 +22,11 @@
 		"name": "Mecha Phantom Beast O-Lion",
 		"type": "Tuner Monster",
 		"desc": "While you control a Token, this card cannot be destroyed by battle or card effects. If this card is sent to the GY: You can Special Summon 1 \"Mecha Phantom Beast Token\" (Machine/WIND/Level 3/ATK 0/DEF 0). You can only use this effect of \"Mecha Phantom Beast O-Lion\" once per turn. You can banish this card from your GY; immediately after this effect resolves, Normal Summon 1 \"Mecha Phantom Beast\" monster from your hand."
+	},
+	{
+		"id": 93013676,
+		"name": "Maha Vailo",
+		"type": "Effect Monster",
+		"desc": "Gains 500 ATK for each Equip Card equipped to this card."
 	}
 ]
