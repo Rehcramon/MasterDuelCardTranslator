@@ -168,7 +168,7 @@ try:
                 current_card_id = -3
         elif screenshot_result[0] == -2:
             if current_card_id != -2:
-                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '\n　　虽然检测到了标题为“masterduel”的窗口，但是截图失败。\n请帮忙反馈这一现象，谢谢支持。')
+                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '\n　　虽然检测到了标题为“masterduel”的窗口，但是截图失败。如果窗口被最小化，则可能出现该情况。')
                 current_card_id = -2
         else:
             if current_card_id == None or current_card_id < -1:
