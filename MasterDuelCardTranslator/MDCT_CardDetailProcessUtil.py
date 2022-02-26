@@ -107,7 +107,7 @@ def putKeyValueInCache(k, v):
 def getText():
     return CardDetailProcessUtil.getPreDetailInfo()
 
-def dhash(image, hash_size=8):
+def dhash(image, hash_size=16):
     # Grayscale and shrink the image in one step.
     image = image.convert('L').resize(
         (hash_size + 1, hash_size),
