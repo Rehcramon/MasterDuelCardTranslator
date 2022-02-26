@@ -304,7 +304,7 @@ try:
             else:
                 T = threading.Thread(target=get_card_raw_text)
             T.start()
-        root.after(180, update_card_detail)
+        root.after(20, update_card_detail)
 
     update_card_detail()
     
