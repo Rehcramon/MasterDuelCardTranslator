@@ -762,7 +762,7 @@ def get_screenshot(window_title):
     saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
     saveDC.SelectObject(saveBitMap)
     result = windll.user32.PrintWindow(hwnd, saveDC.GetSafeHdc(), 3)
-    if result == 1:
+    if result != 0:
         bmpinfo = saveBitMap.GetInfo()
         bmpstr = saveBitMap.GetBitmapBits(True)
         im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
@@ -777,8 +777,8 @@ def get_screenshots_for_ocr():
     ret = get_screenshot('masterduel')
     if ret[0] == False:
         return (False, None, None)
-    # Duel Mode
     mode = get_setting('mode')
+    # Duel Mode
     if mode == 0:
         name_image = ret[1]['screenshot'].crop((
             round(40 / 1920 * ret[1]['w']),
