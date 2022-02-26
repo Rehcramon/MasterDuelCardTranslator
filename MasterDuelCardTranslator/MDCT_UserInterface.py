@@ -121,7 +121,7 @@ def update_source():
 
     con = sqlite3.connect('search.db')
     cursor = con.cursor()
-    cursor.execute('CREATE TABLE IF NOT EXISTS data (desc TEXT PRIMARY KEY, id INTEGER, name TEXT);')
+    cursor.execute('CREATE TABLE IF NOT EXISTS data (desc TEXT, id INTEGER, name TEXT, PRIMARY KEY (desc, id));')
     cursor.execute('DELETE FROM data;')
 
     source_card_desc_and_id = []
