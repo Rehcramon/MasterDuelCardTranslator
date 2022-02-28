@@ -38,11 +38,7 @@ from MDCT_CorrectRecognitionResult import correct_recognition_result
 
 try:
 
-    try:
-        MDCT_Common.load_settings()
-    except:
-        MDCT_Common.load_settings('_settings.json')
-        MDCT_Common.save_settings()
+    MDCT_Common.load_settings()
 
     root = tk.Tk()
     MDCT_UserInterface.ROOT = root
@@ -63,7 +59,6 @@ try:
 
     def update_geometry(event):
         set_setting('geometry', root.geometry(None))
-        MDCT_Common.save_settings()
     
     root.bind('<Configure>', update_geometry)
 
@@ -77,7 +72,6 @@ try:
         font_string = ' '.join(font_string_array)
         set_setting('font', font_string)
         card_display_text.config(font=font_string)
-        MDCT_Common.save_settings()
 
     def font_plus():
         font_string_array = get_setting('font').split(' ')
@@ -87,7 +81,6 @@ try:
         font_string = ' '.join(font_string_array)
         set_setting('font', font_string)
         card_display_text.config(font=font_string)
-        MDCT_Common.save_settings()
 
     menu = tk.Menu(root)
     root.config(menu=menu)

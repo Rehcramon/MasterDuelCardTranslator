@@ -32,7 +32,6 @@ ROOT = None
 
 def set_mode(v):
     set_setting('mode', v)
-    MDCT_Common.save_settings()
 
 def set_duel_mode():
     set_mode(0)
@@ -217,13 +216,11 @@ def update_target():
 
 def change_topmost():
     set_setting('topmost', not get_setting('topmost'))
-    MDCT_Common.save_settings()
     ROOT.attributes('-topmost', get_setting('topmost'))
     ROOT.update()
 
 def set_capture_method(v):
     set_setting('capture_method', v)
-    MDCT_Common.save_settings()
 
 def set_capture_method_findwindow_printwindow():
     set_capture_method(MDCT_Common.CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW)
@@ -233,15 +230,12 @@ def set_capture_method_findwindow_screenshot():
 
 def change_show_raw_text():
     set_setting('show_raw_text', not get_setting('show_raw_text'))
-    MDCT_Common.save_settings()
 
 def change_pause():
     set_setting('pause', not get_setting('pause'))
-    MDCT_Common.save_settings()
 
 def change_save_screenshots():
     set_setting('save_screenshots', not get_setting('save_screenshots'))
-    MDCT_Common.save_settings()
 
 def view_help():
     webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/wiki/Home-(Simplified-Chinese)')

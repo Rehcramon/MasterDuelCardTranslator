@@ -727,24 +727,46 @@ WELCOME_MESSAGE = '''\
 CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW = 'FindWindow & PrintWindow'
 CAPTURE_METHOD_FINDWINDOW_SCREENSHOT = 'FindWindow & Screenshot'
 
+DEFAULT_SETTINGS = {
+    'font': '微软雅黑 10 bold',
+    'source_language': 'eng',
+    'geometry': '300x350',
+    'mode': 0,
+    'topmost': True,
+    'show_raw_text': False,
+    'pause': False,
+    'save_screenshots': False,
+    'capture_method': 'FindWindow & PrintWindow'
+}
+
 SETTINGS = None
-
-def load_settings(filename = 'settings.json'):
-    global SETTINGS
-    settings_file = open(filename, 'r')
-    SETTINGS = json.loads(' '.join(settings_file.readlines()))
-    settings_file.close()
-
-def get_setting(key):
-    return SETTINGS[key]
-
-def set_setting(key, value):
-    SETTINGS[key] = value
 
 def save_settings():
     settings_file = open('settings.json', 'w')
     settings_file.write(json.dumps(SETTINGS))
     settings_file.close()
+
+def load_settings():
+    global SETTINGS
+    try:
+        settings_file = open('settings.json', 'r')
+        settings_str = ' '.join(settings_file.readlines())
+        settings_file.close()
+        SETTINGS = json.loads(settings_str)
+    except:
+        SETTINGS = DEFAULT_SETTINGS
+        save_settings()
+
+def get_setting(key):
+    try:
+        return SETTINGS[key]
+    except:
+        set_setting(key, DEFAULT_SETTINGS[key])
+        return SETTINGS[key]
+
+def set_setting(key, value):
+    SETTINGS[key] = value
+    save_settings()
 
 # https://stackoverflow.com/questions/19695214/screenshot-of-inactive-window-printwindow-win32gui
 # code by hazzey
