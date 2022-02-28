@@ -847,3 +847,13 @@ def get_screenshots_for_ocr():
         name_image.save('screenshot_name.png')
         text_image.save('screenshot_text.png')
     return (0, name_image, text_image)
+
+PATCH_FILENAME = '.\\patch.zip'
+PATCH_INSTALLER_FILENAME = '.\\PatchInstaller.ps1'
+PATCH_INSTALLER_PS1 = '''
+TASKKILL /IM MasterDuelCardTranslator.exe /F
+Expand-Archive -Path {} -DestinationPath . -Force
+Start-Process .\MasterDuelCardTranslator.exe
+Remove-Item -Path {}
+Remove-Item -Path {}
+'''.format(PATCH_FILENAME, PATCH_FILENAME, PATCH_INSTALLER_FILENAME)

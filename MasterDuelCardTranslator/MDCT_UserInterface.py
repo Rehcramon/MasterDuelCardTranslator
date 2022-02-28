@@ -324,15 +324,19 @@ def check_update():
         toplevel.destroy()
         return
 
-    patch_file = open('patch.zip', 'wb')
+    patch_file = open(MDCT_Common.PATCH_FILENAME, 'wb')
     patch_file.write(patch.content)
     patch_file.close()
     toplevel.destroy()
+
+    patch_installer_file = open(MDCT_Common.PATCH_INSTALLER_FILENAME, 'w')
+    patch_installer_file.write(MDCT_Common.PATCH_INSTALLER_PS1)
+    patch_installer_file.close()
     
     try:
-        subprocess.run(['powershell', '.\MDCT_PatchInstaller.ps1'])
+        subprocess.run(['powershell', MDCT_Common.PATCH_INSTALLER_FILENAME])
     except:
-        tk.messagebox.showinfo('请手动更新', '似乎本机上没有安装Windows Powershell，故无法继续更新。\n请退出MDCT后，将目录下的patch.zip解压缩覆盖即可完成更新。')
+        tk.messagebox.showinfo('请手动更新', '似乎本机上没有安装Windows Powershell，故无法继续更新。\n请退出MDCT后，将目录下的{}解压缩覆盖即可完成更新。'.format(MDCT_Common.PATCH_FILENAME))
 
 def browse_github():
     webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator')
