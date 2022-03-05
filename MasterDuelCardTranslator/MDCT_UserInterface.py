@@ -24,9 +24,15 @@ import webbrowser
 import tkinter as tk
 import tkinter.messagebox
 
+import pyautogui
+from PIL import Image
+from PIL import ImageOps
+import pytesseract
+
 import MDCT_Common
 from MDCT_Common import get_setting
 from MDCT_Common import set_setting
+from MDCT_CorrectRecognitionResult import correct_recognition_result
 
 ROOT = None
 
@@ -228,8 +234,93 @@ def set_capture_method_findwindow_printwindow():
 def set_capture_method_findwindow_screenshot():
     set_capture_method(MDCT_Common.CAPTURE_METHOD_FINDWINDOW_SCREENSHOT)
 
+def set_capture_method_screenshot_custom():
+    set_capture_method(MDCT_Common.CAPTURE_METHOD_SCREENSHOT_CUSTOM)
+
 def change_enable_zoom():
     set_setting('enable_zoom', not get_setting('enable_zoom'))
+
+def configure_custom_position():
+    ret = tk.messagebox.askquestion('手动配置文字区域', '''\
+　　是要手动配置“捕获截图方法”中“截图后读取自定义区域”所识别的文字区域吗？如果是，则请仔细阅读以下信息。
+
+　　“截图后读取自定义区域”的原理是读取屏幕截图之后，根据卡名区域和卡文区域的图片转文字结果来进行卡片的匹配与翻译。因此，在配置与使用的过程中请务必保证不要遮挡这两个区域。如果现在或之后有任何界面遮挡住了这两个区域，请立即将它们移开。
+
+　　在点击“是”之后，会依次跳出4个对话框。请依次将鼠标移动到对话框中所要求的位置后按下回车。这是为了配置截图的区域，需要记录卡名左上角、卡名右下角、卡文左上角和卡文右下角这4个点。“截图后读取自定义区域”根据这4个点来定位卡名和卡文的位置。
+　　这个过程中，请尽量不要用鼠标点击任何位置，除非是移动对话框或者是让对话框回到最前。
+　　请再次注意，不要点击这4个对话框的“确认”按钮。“确认”按钮应在鼠标移动到对话框要求的位置后通过回车键触发。
+
+　　在这4个对话框之后，会有最后1个对话框展示当前识别的文字。请确认是否正确。
+
+　　如果已经准备好了配置，请点击任意一张卡片，让屏幕左侧*出现卡片的信息。之后点击“是”继续。
+
+* 由于MDCT提供了不同的模式，会记录不同的文字区域。请确保当前游戏中的界面与MDCT当前的模式一致，以减少出现令人困惑的情况。\
+''')
+    if ret == 'no':
+        return
+
+    tk.messagebox.showinfo('配置文字区域 1/4', '1. 将鼠标移动到卡名的文字区域的左上角，按下回车。')
+    left_top_pos = pyautogui.position()
+    tk.messagebox.showinfo('配置文字区域 2/4', '2. 将鼠标移动到卡名的文字区域的右下角，按下回车。')
+    right_bottom_pos = pyautogui.position()
+    width = right_bottom_pos[0] - left_top_pos[0]
+    height = right_bottom_pos[1] - left_top_pos[1]
+    if width <= 0 or height <= 0:
+        tk.messagebox.showerror('配置文字区域失败', '选择的区域不是合法的矩形。请重新配置。')
+        return
+    nx = left_top_pos[0]
+    ny = left_top_pos[1]
+    nw = width
+    nh = height
+
+    tk.messagebox.showinfo('配置文字区域 3/4', '3. 将鼠标移动到卡文的文字区域的左上角，按下回车。')
+    left_top_pos = pyautogui.position()
+    tk.messagebox.showinfo('配置文字区域 4/4', '4. 将鼠标移动到卡文的文字区域的右下角，按下回车。')
+    right_bottom_pos = pyautogui.position()
+    width = right_bottom_pos[0] - left_top_pos[0]
+    height = right_bottom_pos[1] - left_top_pos[1]
+    if width <= 0 or height <= 0:
+        tk.messagebox.showerror('配置文字区域失败', '选择的区域不是合法的矩形。请重新配置。')
+        return
+    tx = left_top_pos[0]
+    ty = left_top_pos[1]
+    tw = width
+    th = height
+
+    card_name_screenshot = pyautogui.screenshot(region=(nx, ny, nw, nh))
+    card_name = pytesseract.image_to_string(ImageOps.invert(card_name_screenshot.convert('L')), lang=get_setting('source_language'), config='--psm 7')[:-1]
+    card_name = correct_recognition_result(card_name)
+
+    card_desc_screenshot = pyautogui.screenshot(region=(tx, ty, tw, th))
+    card_desc = pytesseract.image_to_string(ImageOps.invert(card_desc_screenshot.convert('L')), lang=get_setting('source_language'))[:-1]
+    card_desc = correct_recognition_result(card_desc)
+
+    ret = tk.messagebox.askquestion('请确认配置结果', '''\
+当前识别结果的卡名为：
+{}
+当前识别结果的卡文为：
+{}
+
+如果基本正确，请点击“是”以保存修改。
+如果不太正确，请点击“否”以取消修改。\
+'''.format(card_name, card_desc))
+    if ret == 'no':
+        return
+
+    position = {
+        'nx0': nx,
+        'ny0': ny,
+        'nx1': nx + nw,
+        'ny1': ny + nh,
+        'tx0': tx,
+        'ty0': ty,
+        'tx1': tx + tw,
+        'ty1': ty + th
+    }
+    capture_method_config = get_setting('capture_method_config')
+    capture_method_config[MDCT_Common.CAPTURE_METHOD_SCREENSHOT_CUSTOM]['position'][get_setting('mode')] = position
+    set_setting('capture_method_config', capture_method_config)
+    tk.messagebox.showinfo('配置成功', '请手动切换“捕获截图方法”为“截图后读取自定义区域”以查看结果。')
 
 def change_show_raw_text():
     set_setting('show_raw_text', not get_setting('show_raw_text'))

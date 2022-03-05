@@ -109,8 +109,6 @@ try:
     capture_method_menu = tk.Menu(advanced_settings_menu, tearoff=0)
     advanced_settings_menu_topmost_var = tk.IntVar(advanced_settings_menu)
     advanced_settings_menu_topmost_var.set(get_setting('topmost'))
-    advanced_settings_menu_enable_zoom_var = tk.IntVar(advanced_settings_menu)
-    advanced_settings_menu_enable_zoom_var.set(get_setting('enable_zoom'))
     advanced_settings_menu_save_screenshots_var = tk.IntVar(advanced_settings_menu)
     advanced_settings_menu_save_screenshots_var.set(get_setting('save_screenshots'))
     advanced_settings_menu_raw_text_var = tk.IntVar(advanced_settings_menu)
@@ -119,13 +117,14 @@ try:
     advanced_settings_menu_pause_var.set(get_setting('pause'))
     advanced_settings_menu.add_checkbutton(label='置于顶层', var=advanced_settings_menu_topmost_var, command=MDCT_UserInterface.change_topmost)
     advanced_settings_menu.add_cascade(label='捕获截图方法', menu=capture_method_menu)
-    advanced_settings_menu.add_checkbutton(label='截图区域自动缩放', var=advanced_settings_menu_enable_zoom_var, command=MDCT_UserInterface.change_enable_zoom)
     advanced_settings_menu.add_checkbutton(label='保存截图', var=advanced_settings_menu_save_screenshots_var, command=MDCT_UserInterface.change_save_screenshots)
     advanced_settings_menu.add_checkbutton(label='仅显示OCR结果', var=advanced_settings_menu_raw_text_var, command=MDCT_UserInterface.change_show_raw_text)
     advanced_settings_menu.add_checkbutton(label='暂停执行OCR及后续步骤', var=advanced_settings_menu_pause_var, command=MDCT_UserInterface.change_pause)
 
     capture_method_menu_var = tk.StringVar(capture_method_menu)
     capture_method_menu_var.set(get_setting('capture_method'))
+    capture_method_menu_enable_zoom_var = tk.IntVar(capture_method_menu)
+    capture_method_menu_enable_zoom_var.set(get_setting('enable_zoom'))
     capture_method_menu.add_radiobutton(
         label='识别并绘制窗口',
         var=capture_method_menu_var,
@@ -138,6 +137,15 @@ try:
         value=MDCT_Common.CAPTURE_METHOD_FINDWINDOW_SCREENSHOT,
         command=MDCT_UserInterface.set_capture_method_findwindow_screenshot
     )
+    capture_method_menu.add_radiobutton(
+        label='截图后读取自定义区域',
+        var=capture_method_menu_var,
+        value=MDCT_Common.CAPTURE_METHOD_SCREENSHOT_CUSTOM,
+        command=MDCT_UserInterface.set_capture_method_screenshot_custom
+    )
+    capture_method_menu.add_separator()
+    capture_method_menu.add_checkbutton(label='自动缩放识别区域 *适用于"识别并绘制窗口"和"识别窗口后截图"', var=capture_method_menu_enable_zoom_var, command=MDCT_UserInterface.change_enable_zoom)
+    capture_method_menu.add_command(label='自定义截图区域 *适用于"截图后读取自定义区域"', command=MDCT_UserInterface.configure_custom_position)
 
     author_menu = tk.Menu(help_menu, tearoff=0)
     help_menu.add_command(label='查看帮助', command=MDCT_UserInterface.view_help)

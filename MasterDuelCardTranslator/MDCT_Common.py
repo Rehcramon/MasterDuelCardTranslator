@@ -728,6 +728,7 @@ MODE_DUEL = 'Duel'
 MODE_DECK = 'Deck'
 CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW = 'FindWindow & PrintWindow'
 CAPTURE_METHOD_FINDWINDOW_SCREENSHOT = 'FindWindow & Screenshot'
+CAPTURE_METHOD_SCREENSHOT_CUSTOM = 'Screenshot & Custom'
 
 DEFAULT_SETTINGS = {
     'font': '微软雅黑 10 bold',
@@ -788,6 +789,30 @@ DEFAULT_SETTINGS = {
                     'ty1': 758 / 1080
                 }
             }
+        },
+        CAPTURE_METHOD_SCREENSHOT_CUSTOM: {
+            'position': {
+                MODE_DUEL: {
+                    'nx0': 0,
+                    'ny0': 0,
+                    'nx1': 1,
+                    'ny1': 1,
+                    'tx0': 0,
+                    'ty0': 0,
+                    'tx1': 1,
+                    'ty1': 1
+                },
+                MODE_DECK: {
+                    'nx0': 0,
+                    'ny0': 0,
+                    'nx1': 1,
+                    'ny1': 1,
+                    'tx0': 0,
+                    'ty0': 0,
+                    'tx1': 1,
+                    'ty1': 1
+                }
+            }
         }
     }
 }
@@ -830,6 +855,8 @@ RETURN_CODE_SCREENSHOT_FAIL = -4
 # https://stackoverflow.com/questions/19695214/screenshot-of-inactive-window-printwindow-win32gui
 # based on the code by hazzey
 def get_screenshot(window_title):
+    if get_setting('capture_method') == CAPTURE_METHOD_SCREENSHOT_CUSTOM:
+        return (RETURN_CODE_OK, {'screenshot': pyautogui.screenshot(), 'w': 1, 'h': 1})
     hwnd = win32gui.FindWindow(None, window_title)
     if hwnd == 0:
         return (RETURN_CODE_NO_WINDOW, None)
