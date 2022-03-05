@@ -180,13 +180,13 @@ try:
                 CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '　　未检测到标题为“masterduel”的窗口。请启动Yu-Gi-Oh! Master Duel。')
                 current_card_id = MDCT_Common.RETURN_CODE_NO_WINDOW
         elif screenshot_result[0] == MDCT_Common.RETURN_CODE_NO_WIDTH_HEIGHT:
-            if current_card_id != RETURN_CODE_NO_WIDTH_HEIGHT:
+            if current_card_id != MDCT_Common.RETURN_CODE_NO_WIDTH_HEIGHT:
                 CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '''\
 　　虽然检测到了标题为“masterduel”的窗口，但是获取窗口大小失败。
 　　如果窗口被最小化，则可能出现该情况。
 　　如果窗口正常显示，(待修改)。\
 ''')
-                current_card_id = RETURN_CODE_NO_WIDTH_HEIGHT
+                current_card_id = MDCT_Common.RETURN_CODE_NO_WIDTH_HEIGHT
         elif screenshot_result[0] == MDCT_Common.RETURN_CODE_SCREENSHOT_FAIL:
             if current_card_id != MDCT_Common.RETURN_CODE_SCREENSHOT_FAIL:
                 CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '''\
