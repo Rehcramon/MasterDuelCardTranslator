@@ -228,6 +228,9 @@ def set_capture_method_findwindow_printwindow():
 def set_capture_method_findwindow_screenshot():
     set_capture_method(MDCT_Common.CAPTURE_METHOD_FINDWINDOW_SCREENSHOT)
 
+def change_enable_zoom():
+    set_setting('enable_zoom', not get_setting('enable_zoom'))
+
 def change_show_raw_text():
     set_setting('show_raw_text', not get_setting('show_raw_text'))
 

@@ -736,7 +736,8 @@ DEFAULT_SETTINGS = {
     'show_raw_text': False,
     'pause': False,
     'save_screenshots': False,
-    'capture_method': 'FindWindow & PrintWindow'
+    'capture_method': 'FindWindow & PrintWindow',
+    'enable_zoom': True
 }
 
 SETTINGS = None
@@ -778,10 +779,11 @@ def get_screenshot(window_title):
     w = right - left
     h = bot - top
     if get_setting('capture_method') == CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW:
-        dpi = windll.user32.GetDpiForWindow(hwnd)
-        zoom_ratio = dpi / 96
-        w = round(w * zoom_ratio)
-        h = round(h * zoom_ratio)
+        if get_setting('enable_zoom') == True:
+            dpi = windll.user32.GetDpiForWindow(hwnd)
+            zoom_ratio = dpi / 96
+            w = round(w * zoom_ratio)
+            h = round(h * zoom_ratio)
         hwndDC = win32gui.GetWindowDC(hwnd)
         mfcDC  = win32ui.CreateDCFromHandle(hwndDC)
         saveDC = mfcDC.CreateCompatibleDC()
