@@ -769,15 +769,23 @@ def set_setting(key, value):
     SETTINGS[key] = value
     save_settings()
 
+RETURN_CODE_OK = 0
+RETURN_CODE_NO_RESULT = -1
+RETURN_CODE_NO_WIDTH_HEIGHT = -2
+RETURN_CODE_NO_WINDOW = -3
+RETURN_CODE_SCREENSHOT_FAIL = -4
+
 # https://stackoverflow.com/questions/19695214/screenshot-of-inactive-window-printwindow-win32gui
-# code by hazzey
+# based on the code by hazzey
 def get_screenshot(window_title):
     hwnd = win32gui.FindWindow(None, window_title)
     if hwnd == 0:
-        return (-3, None)
+        return (RETURN_CODE_NO_WINDOW, None)
     left, top, right, bot = win32gui.GetClientRect(hwnd)
     w = right - left
     h = bot - top
+    if w == 0 or h == 0:
+        return (RETURN_CODE_NO_WIDTH_HEIGHT, None)
     if get_setting('capture_method') == CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW:
         if get_setting('enable_zoom') == True:
             dpi = windll.user32.GetDpiForWindow(hwnd)
@@ -795,25 +803,22 @@ def get_screenshot(window_title):
             bmpinfo = saveBitMap.GetInfo()
             bmpstr = saveBitMap.GetBitmapBits(True)
             im = Image.frombuffer('RGB', (bmpinfo['bmWidth'], bmpinfo['bmHeight']), bmpstr, 'raw', 'BGRX', 0, 1)
-            ret = (0, {'screenshot': im, 'w': w, 'h': h})
+            ret = (RETURN_CODE_OK, {'screenshot': im, 'w': w, 'h': h})
         else:
-            ret = (-2, None)
+            ret = (RETURN_CODE_SCREENSHOT_FAIL, None)
         win32gui.DeleteObject(saveBitMap.GetHandle())
         saveDC.DeleteDC()
         mfcDC.DeleteDC()
         win32gui.ReleaseDC(hwnd, hwndDC)
     if get_setting('capture_method') == CAPTURE_METHOD_FINDWINDOW_SCREENSHOT:
-        if w == 0 or h == 0:
-            ret = (-2, None)
-        else:
-            xy = win32gui.ClientToScreen(hwnd, (left, top))
-            im = pyautogui.screenshot(region=(xy[0], xy[1], w, h))
-            ret = (0, {'screenshot': im, 'w': w, 'h': h})
+        xy = win32gui.ClientToScreen(hwnd, (left, top))
+        im = pyautogui.screenshot(region=(xy[0], xy[1], w, h))
+        ret = (RETURN_CODE_OK, {'screenshot': im, 'w': w, 'h': h})
     return ret
 
 def get_screenshots_for_ocr():
     ret = get_screenshot('masterduel')
-    if ret[0] != 0:
+    if ret[0] != RETURN_CODE_OK:
         return (ret[0], None, None)
     mode = get_setting('mode')
     # Duel Mode
@@ -848,7 +853,7 @@ def get_screenshots_for_ocr():
         ret[1]['screenshot'].save('screenshot_full.png')
         name_image.save('screenshot_name.png')
         text_image.save('screenshot_text.png')
-    return (0, name_image, text_image)
+    return (RETURN_CODE_OK, name_image, text_image)
 
 PATCH_FILENAME = '.\\patch.zip'
 PATCH_INSTALLER_FILENAME = '.\\PatchInstaller.ps1'
