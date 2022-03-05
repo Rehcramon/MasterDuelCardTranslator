@@ -282,7 +282,7 @@ try:
         CDPU.setThreadStatus(True)
         current_card_id = None
         screenshot_result = MDCT_Common.get_screenshots_for_ocr()
-        if screenshot_result[0] == 0:
+        if screenshot_result[0] == MDCT_Common.RETURN_CODE_OK:
             screenshotInvertImg = ImageOps.invert(screenshot_result[1].convert('L'))
             card_name = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'), config='--psm 7')[:-1]
             card_name = correct_recognition_result(card_name)
@@ -291,10 +291,7 @@ try:
             card_desc = correct_recognition_result(card_desc)
             raw_text = 'Name:\n{}\n\nText:\n{}'.format(card_name, card_desc)
         else:
-            if screenshot_result[0] == -2:
-                raw_text = 'FAIL TO CAPTURE SCREENSHOT'
-            if screenshot_result[0] == -3:
-                raw_text = '`masterduel` NOT FOUND'
+            raw_text = 'RETURN CODE: {}'.format(screenshot_result[0])
         if raw_text != CDPU.getText():
             CDPU.changeCardDetail(raw_text)
         CDPU.setThreadStatus(False)
