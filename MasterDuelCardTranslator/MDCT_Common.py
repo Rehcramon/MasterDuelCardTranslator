@@ -739,7 +739,57 @@ DEFAULT_SETTINGS = {
     'pause': False,
     'save_screenshots': False,
     'capture_method': CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW,
-    'enable_zoom': True
+    'enable_zoom': True,
+    'capture_method_config': {
+        CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW: {
+            'position': {
+                MODE_DUEL: {
+                    'nx0': 40 / 1920,
+                    'ny0': 150 / 1080,
+                    'nx1': 348 / 1920,
+                    'ny1': 190 / 1080,
+                    'tx0': 30 / 1920,
+                    'ty0': 501 / 1080,
+                    'tx1': 385 / 1920,
+                    'ty1': 851 / 1080
+                },
+                MODE_DECK: {
+                    'nx0': 58 / 1920,
+                    'ny0': 120 / 1080,
+                    'nx1': 404 / 1920,
+                    'ny1': 160 / 1080,
+                    'tx0': 54 / 1920,
+                    'ty0': 465 / 1080,
+                    'tx1': 442 / 1920,
+                    'ty1': 758 / 1080
+                }
+            }
+        },
+        CAPTURE_METHOD_FINDWINDOW_SCREENSHOT: {
+            'position': {
+                MODE_DUEL: {
+                    'nx0': 40 / 1920,
+                    'ny0': 150 / 1080,
+                    'nx1': 348 / 1920,
+                    'ny1': 190 / 1080,
+                    'tx0': 30 / 1920,
+                    'ty0': 501 / 1080,
+                    'tx1': 385 / 1920,
+                    'ty1': 851 / 1080
+                },
+                MODE_DECK: {
+                    'nx0': 58 / 1920,
+                    'ny0': 120 / 1080,
+                    'nx1': 404 / 1920,
+                    'ny1': 160 / 1080,
+                    'tx0': 54 / 1920,
+                    'ty0': 465 / 1080,
+                    'tx1': 442 / 1920,
+                    'ty1': 758 / 1080
+                }
+            }
+        }
+    }
 }
 
 SETTINGS = None
@@ -823,32 +873,20 @@ def get_screenshots_for_ocr():
     if ret[0] != RETURN_CODE_OK:
         return (ret[0], None, None)
     mode = get_setting('mode')
-    if mode == MODE_DUEL:
-        name_image = ret[1]['screenshot'].crop((
-            round(40 / 1920 * ret[1]['w']),
-            round(150 / 1080 * ret[1]['h']),
-            round(348 / 1920 * ret[1]['w']),
-            round(190 / 1080 * ret[1]['h'])
-        ))
-        text_image = ret[1]['screenshot'].crop((
-            round(30 / 1920 * ret[1]['w']),
-            round(501 / 1080 * ret[1]['h']),
-            round(385 / 1920 * ret[1]['w']),
-            round(851 / 1080 * ret[1]['h'])
-        ))
-    if mode == MODE_DECK:
-        name_image = ret[1]['screenshot'].crop((
-            round(58 / 1920 * ret[1]['w']),
-            round(120 / 1080 * ret[1]['h']),
-            round(404 / 1920 * ret[1]['w']),
-            round(160 / 1080 * ret[1]['h'])
-        ))
-        text_image = ret[1]['screenshot'].crop((
-            round(54 / 1920 * ret[1]['w']),
-            round(465 / 1080 * ret[1]['h']),
-            round(442 / 1920 * ret[1]['w']),
-            round(758 / 1080 * ret[1]['h'])
-        ))
+    capture_method = get_setting('capture_method')
+    p = get_setting('capture_method_config')[capture_method]['position'][mode]
+    name_image = ret[1]['screenshot'].crop((
+        round(p['nx0'] * ret[1]['w']),
+        round(p['ny0'] * ret[1]['h']),
+        round(p['nx1'] * ret[1]['w']),
+        round(p['ny1'] * ret[1]['h'])
+    ))
+    text_image = ret[1]['screenshot'].crop((
+        round(p['tx0'] * ret[1]['w']),
+        round(p['ty0'] * ret[1]['h']),
+        round(p['tx1'] * ret[1]['w']),
+        round(p['ty1'] * ret[1]['h'])
+    ))
     if get_setting('save_screenshots'):
         ret[1]['screenshot'].save('screenshot_full.png')
         name_image.save('screenshot_name.png')
