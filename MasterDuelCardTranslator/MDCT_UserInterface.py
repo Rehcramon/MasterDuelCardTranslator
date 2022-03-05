@@ -34,10 +34,10 @@ def set_mode(v):
     set_setting('mode', v)
 
 def set_duel_mode():
-    set_mode(0)
+    set_mode(MDCT_Common.MODE_DUEL)
 
 def set_deck_mode():
-    set_mode(1)
+    set_mode(MDCT_Common.MODE_DECK)
 
 def update_source():
     ret = tk.messagebox.askquestion('更新源数据', '''\

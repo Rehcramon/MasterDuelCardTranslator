@@ -101,10 +101,10 @@ try:
     settings_menu.add_separator()
     settings_menu.add_cascade(label='高级', menu=advanced_settings_menu)
 
-    mode_menu_var = tk.IntVar(mode_menu)
+    mode_menu_var = tk.StringVar(mode_menu)
     mode_menu_var.set(MDCT_Common.get_setting('mode'))
-    mode_menu.add_radiobutton(label='决斗模式', var=mode_menu_var, value=0, command=MDCT_UserInterface.set_duel_mode)
-    mode_menu.add_radiobutton(label='组卡模式', var=mode_menu_var, value=1, command=MDCT_UserInterface.set_deck_mode)
+    mode_menu.add_radiobutton(label='决斗模式', var=mode_menu_var, value=MDCT_Common.MODE_DUEL, command=MDCT_UserInterface.set_duel_mode)
+    mode_menu.add_radiobutton(label='组卡模式', var=mode_menu_var, value=MDCT_Common.MODE_DECK, command=MDCT_UserInterface.set_deck_mode)
 
     capture_method_menu = tk.Menu(advanced_settings_menu, tearoff=0)
     advanced_settings_menu_topmost_var = tk.IntVar(advanced_settings_menu)

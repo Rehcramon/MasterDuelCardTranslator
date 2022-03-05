@@ -724,6 +724,8 @@ WELCOME_MESSAGE = '''\
 \
 '''
 
+MODE_DUEL = 'Duel'
+MODE_DECK = 'Deck'
 CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW = 'FindWindow & PrintWindow'
 CAPTURE_METHOD_FINDWINDOW_SCREENSHOT = 'FindWindow & Screenshot'
 
@@ -731,12 +733,12 @@ DEFAULT_SETTINGS = {
     'font': '微软雅黑 10 bold',
     'source_language': 'eng',
     'geometry': '300x350',
-    'mode': 0,
+    'mode': MODE_DUEL,
     'topmost': True,
     'show_raw_text': False,
     'pause': False,
     'save_screenshots': False,
-    'capture_method': 'FindWindow & PrintWindow',
+    'capture_method': CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW,
     'enable_zoom': True
 }
 
@@ -821,8 +823,7 @@ def get_screenshots_for_ocr():
     if ret[0] != RETURN_CODE_OK:
         return (ret[0], None, None)
     mode = get_setting('mode')
-    # Duel Mode
-    if mode == 0:
+    if mode == MODE_DUEL:
         name_image = ret[1]['screenshot'].crop((
             round(40 / 1920 * ret[1]['w']),
             round(150 / 1080 * ret[1]['h']),
@@ -835,8 +836,7 @@ def get_screenshots_for_ocr():
             round(385 / 1920 * ret[1]['w']),
             round(851 / 1080 * ret[1]['h'])
         ))
-    # Deck Mode
-    if mode == 1:
+    if mode == MODE_DECK:
         name_image = ret[1]['screenshot'].crop((
             round(58 / 1920 * ret[1]['w']),
             round(120 / 1080 * ret[1]['h']),
