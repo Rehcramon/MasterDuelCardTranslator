@@ -117,7 +117,7 @@ try:
     advanced_settings_menu_pause_var.set(get_setting('pause'))
     advanced_settings_menu.add_checkbutton(label='置于顶层', var=advanced_settings_menu_topmost_var, command=MDCT_UserInterface.change_topmost)
     advanced_settings_menu.add_cascade(label='捕获截图方法', menu=capture_method_menu)
-    advanced_settings_menu.add_checkbutton(label='保存截图', var=advanced_settings_menu_save_screenshots_var, command=MDCT_UserInterface.change_save_screenshots)
+    advanced_settings_menu.add_checkbutton(label='每次OCR都保存截图文件', var=advanced_settings_menu_save_screenshots_var, command=MDCT_UserInterface.change_save_screenshots)
     advanced_settings_menu.add_checkbutton(label='仅显示OCR结果', var=advanced_settings_menu_raw_text_var, command=MDCT_UserInterface.change_show_raw_text)
     advanced_settings_menu.add_checkbutton(label='暂停执行OCR及后续步骤', var=advanced_settings_menu_pause_var, command=MDCT_UserInterface.change_pause)
 
@@ -165,6 +165,7 @@ try:
 
     card_display_text = tk.scrolledtext.ScrolledText(root, width=1, height=1, font=get_setting('font'))
     CDPU.initUtil(card_display_text)
+    CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '　　这是空白页。')
 
     current_card_id = None
 
@@ -185,29 +186,19 @@ try:
         screenshot_result = MDCT_Common.get_screenshots_for_ocr()
         if screenshot_result[0] == MDCT_Common.RETURN_CODE_NO_WINDOW:
             if current_card_id != MDCT_Common.RETURN_CODE_NO_WINDOW:
-                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '　　未检测到标题为“masterduel”的窗口。请启动Yu-Gi-Oh! Master Duel。')
+                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '　　未检测到标题为"masterduel"的窗口。')
                 current_card_id = MDCT_Common.RETURN_CODE_NO_WINDOW
         elif screenshot_result[0] == MDCT_Common.RETURN_CODE_NO_WIDTH_HEIGHT:
             if current_card_id != MDCT_Common.RETURN_CODE_NO_WIDTH_HEIGHT:
-                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '''\
-　　虽然检测到了标题为“masterduel”的窗口，但是获取窗口大小失败。
-　　如果窗口被最小化，则可能出现该情况。
-　　如果窗口正常显示，(待修改)。\
-''')
+                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '　　虽然检测到了标题为"masterduel"的窗口，但是获取窗口大小失败。')
                 current_card_id = MDCT_Common.RETURN_CODE_NO_WIDTH_HEIGHT
         elif screenshot_result[0] == MDCT_Common.RETURN_CODE_SCREENSHOT_FAIL:
             if current_card_id != MDCT_Common.RETURN_CODE_SCREENSHOT_FAIL:
-                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '''\
-　　截图失败。建议将捕获截图方法修改为“识别窗口后截图”来尝试解决该问题。
-　　请依次选择“设置”->“高级”->“捕获截图方法”进行操作。\
-''')
+                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '　　截图失败。')
                 current_card_id = MDCT_Common.RETURN_CODE_SCREENSHOT_FAIL
         else:
             if current_card_id == None or current_card_id < -1: # MDCT_Common.RETURN_CODE_NO_RESULT = -1
-                error_message = MDCT_Common.WELCOME_MESSAGE + '　　未能匹配到任何卡片。'
-                if get_setting('capture_method') == MDCT_Common.CAPTURE_METHOD_FINDWINDOW_SCREENSHOT:
-                    error_message += '\n　　请不要遮挡卡名和卡文区域。'
-                CDPU.changeCardDetail(error_message)
+                CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '　　未能匹配到任何卡片。')
                 current_card_id = MDCT_Common.RETURN_CODE_NO_RESULT
             screenshotImg = screenshot_result[2]
             # add LRU Cache Before OCR. Improved performance in most scenarios

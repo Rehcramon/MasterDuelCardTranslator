@@ -322,14 +322,14 @@ def configure_custom_position():
     set_setting('capture_method_config', capture_method_config)
     tk.messagebox.showinfo('配置成功', '请手动切换“捕获截图方法”为“截图后读取自定义区域”以查看结果。')
 
+def change_save_screenshots():
+    set_setting('save_screenshots', not get_setting('save_screenshots'))
+
 def change_show_raw_text():
     set_setting('show_raw_text', not get_setting('show_raw_text'))
 
 def change_pause():
     set_setting('pause', not get_setting('pause'))
-
-def change_save_screenshots():
-    set_setting('save_screenshots', not get_setting('save_screenshots'))
 
 def view_help():
     webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/wiki/Home-(Simplified-Chinese)')

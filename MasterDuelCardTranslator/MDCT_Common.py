@@ -22,7 +22,7 @@ from ctypes import windll
 from PIL import Image
 import pyautogui
 
-VERSION = '2.2'
+VERSION = '2.3'
 
 SHORT_TITLE = 'MDCT v{}'.format(VERSION)
 
@@ -720,6 +720,7 @@ Public License instead of this License.  But first, please read
 WELCOME_MESSAGE = '''\
 
 　　欢迎使用Master Duel Card Translator。
+　　下文是当前的一些信息。可点击"帮助"下的"查看帮助"以获得更多信息。这将会打开一个浏览器窗口。
 
 \
 '''
