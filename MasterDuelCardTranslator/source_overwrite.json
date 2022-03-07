@@ -34,5 +34,23 @@
 		"name": "Mist Valley Thunderbird",
 		"type": "Effect Monster",
 		"desc": "If this face-up card on the field returns to the hand: Special Summon it, but it cannot attack this turn."
+	},
+	{
+		"id": 48770333,
+		"name": "Thunder King, the Lightningstrike Kaiju",
+		"type": "Effect Monster",
+		"desc": "You can Special Summon this card (from your hand) to your opponent's field in Attack Position, by Tributing 1 monster they control. If your opponent controls a \"Kaiju\" monster, you can Special Summon this card (from your hand) in Attack Position. You can only control 1 \"Kaiju\" monster. Once per turn: You can remove 3 Kaiju Counters from anywhere on the field; your opponent cannot activate cards and effects for the rest of this turn, also this card can make up to 3 attacks on monsters during each Battle Phase this turn."
+	},
+	{
+		"id": 36956512,
+		"name": "Gadarla, the Mystery Dust Kaiju",
+		"type": "Effect Monster",
+		"desc": "You can Special Summon this card (from your hand) to your opponent's field in Attack Position, by Tributing 1 monster they control. If your opponent controls a \"Kaiju\" monster, you can Special Summon this card (from your hand) in Attack Position. You can only control 1 \"Kaiju\" monster. Once per turn (Quick Effect): You can remove 3 Kaiju Counters from anywhere on the field; the ATK/DEF of all other monsters on the field become halved."
+	},
+	{
+		"id": 28674152,
+		"name": "Radian, the Multidimensional Kaiju",
+		"type": "Effect Monster",
+		"desc": "You can Special Summon this card (from your hand) to your opponent's field in Attack Position, by Tributing 1 monster they control. If your opponent controls a \"Kaiju\" monster, you can Special Summon this card (from your hand) in Attack Position. You can only control 1 \"Kaiju\" monster. Once per turn: You can remove 2 Kaiju Counters from anywhere on the field; Special Summon 1 \"Radian Token\" (Fiend/DARK/Level 7/ATK 2800/DEF 0), but it cannot be used as Synchro Material."
 	}
 ]
