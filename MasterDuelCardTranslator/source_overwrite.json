@@ -52,5 +52,11 @@
 		"name": "Radian, the Multidimensional Kaiju",
 		"type": "Effect Monster",
 		"desc": "You can Special Summon this card (from your hand) to your opponent's field in Attack Position, by Tributing 1 monster they control. If your opponent controls a \"Kaiju\" monster, you can Special Summon this card (from your hand) in Attack Position. You can only control 1 \"Kaiju\" monster. Once per turn: You can remove 2 Kaiju Counters from anywhere on the field; Special Summon 1 \"Radian Token\" (Fiend/DARK/Level 7/ATK 2800/DEF 0), but it cannot be used as Synchro Material."
+	},
+	{
+		"id": 18716735,
+		"name": "Raremetalfoes Bismugear",
+		"type": "Pendulum Effect Monster",
+		"desc": "[ Pendulum Effect ]\r\nOnce per turn: You can target 1 other face-up card you control; destroy it, and if you do, Set 1 \"Metalfoes\" Spell/Trap directly from your Deck.\r\n----------------------------------------\r\n[ Monster Effect ]\r\nIf this card on the field is destroyed by battle or card effect: You can add 1 \"Metalfoes\" monster from your Deck to your hand during the End Phase of this turn. You can only use this effect of \"Raremetalfoes Bismugear\" once per turn."
 	}
 ]
