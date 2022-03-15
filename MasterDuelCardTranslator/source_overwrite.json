@@ -58,5 +58,11 @@
 		"name": "Raremetalfoes Bismugear",
 		"type": "Pendulum Effect Monster",
 		"desc": "[ Pendulum Effect ]\r\nOnce per turn: You can target 1 other face-up card you control; destroy it, and if you do, Set 1 \"Metalfoes\" Spell/Trap directly from your Deck.\r\n----------------------------------------\r\n[ Monster Effect ]\r\nIf this card on the field is destroyed by battle or card effect: You can add 1 \"Metalfoes\" monster from your Deck to your hand during the End Phase of this turn. You can only use this effect of \"Raremetalfoes Bismugear\" once per turn."
+	},
+	{
+		"id": 9348522,
+		"name": "Cloudcastle",
+		"type": "Synchro Monster",
+		"desc": "1 Tuner + 1+ non-Tuner monsters\nWhen this card is Synchro Summoned: You can target 1 Level 9 monster in your GY; Special Summon that target. Level 8 or lower monsters cannot attack the turn they are Normal or Special Summoned."
 	}
 ]
