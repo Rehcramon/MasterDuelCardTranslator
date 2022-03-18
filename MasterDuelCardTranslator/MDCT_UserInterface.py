@@ -23,6 +23,7 @@ import subprocess
 import webbrowser
 import tkinter as tk
 import tkinter.messagebox
+import tkinter.simpledialog
 
 import pyautogui
 from PIL import Image
@@ -330,6 +331,38 @@ def change_show_raw_text():
 
 def change_pause():
     set_setting('pause', not get_setting('pause'))
+
+def set_cache_hash_size():
+    cache_hash_size = tk.simpledialog.askinteger('设定哈希时图片大小', '''\
+请输入哈希时使用的图片大小，它是一个正整数。
+例：如果该值设置为4，则哈希时会先将截图拉伸为5x4的图片。
+该值越小，识别的准确率越低，但是识别速度越快。
+默认值为{}。
+请注意，随意修改该值可能会导致运行错误。如果不理解，请点击"Cancel"取消。\
+'''.format(MDCT_Common.DEFAULT_SETTINGS['cache_hash_size']))
+    if cache_hash_size is not None:
+        set_setting('cache_hash_size', cache_hash_size)
+
+def set_cache_hash_step():
+    cache_hash_step = tk.simpledialog.askinteger('设定缓存中哈希值步进长度', '''\
+请输入缓存中哈希值的步进长度，它是一个正整数。
+例：如果原本的哈希值是"01234567"，步进长度为2，则缓存时存储的哈希值为"0246"。
+该值越小，识别的准确率越高，但是识别速度越慢。
+默认值为{}。
+请注意，随意修改该值可能会导致运行错误。如果不理解，请点击"Cancel"取消。\
+'''.format(MDCT_Common.DEFAULT_SETTINGS['cache_hash_step']))
+    if cache_hash_step is not None:
+        set_setting('cache_hash_step', cache_hash_step)
+
+def clear_cache():
+    ret = tk.messagebox.askquestion('清空缓存', '要清空缓存吗？清空缓存会让MDCT“焕然一新”，忘记之前所识别过的卡片。这样会降低识别速度，但是有可能解决未知的问题。')
+    if ret == 'no':
+        return
+    con_cache = sqlite3.connect('cache.db')
+    cursor_cache = con_cache.cursor()
+    cursor_cache.execute('DELETE FROM cache;')
+    con_cache.commit()
+    con_cache.close()
 
 def view_help():
     webbrowser.open('https://github.com/Rehcramon/MasterDuelCardTranslator/wiki/Home-(Simplified-Chinese)')

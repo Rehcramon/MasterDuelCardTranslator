@@ -37,6 +37,11 @@ import MDCT_TargetParser
 from MDCT_CorrectRecognitionResult import correct_recognition_result
 
 try:
+    con_cache = sqlite3.connect('cache.db')
+    cursor_cache = con_cache.cursor()
+    cursor_cache.execute('CREATE TABLE IF NOT EXISTS cache (hash TEXT PRIMARY KEY, txt TEXT);')
+    con_cache.commit()
+    con_cache.close()
 
     MDCT_Common.load_settings()
 
@@ -116,10 +121,15 @@ try:
     advanced_settings_menu_pause_var = tk.IntVar(advanced_settings_menu)
     advanced_settings_menu_pause_var.set(get_setting('pause'))
     advanced_settings_menu.add_checkbutton(label='置于顶层', var=advanced_settings_menu_topmost_var, command=MDCT_UserInterface.change_topmost)
+    advanced_settings_menu.add_separator()
     advanced_settings_menu.add_cascade(label='捕获截图方法', menu=capture_method_menu)
     advanced_settings_menu.add_checkbutton(label='每次OCR都保存截图文件', var=advanced_settings_menu_save_screenshots_var, command=MDCT_UserInterface.change_save_screenshots)
     advanced_settings_menu.add_checkbutton(label='仅显示OCR结果', var=advanced_settings_menu_raw_text_var, command=MDCT_UserInterface.change_show_raw_text)
     advanced_settings_menu.add_checkbutton(label='暂停执行OCR及后续步骤', var=advanced_settings_menu_pause_var, command=MDCT_UserInterface.change_pause)
+    advanced_settings_menu.add_separator()
+    advanced_settings_menu.add_command(label='设定哈希时图片大小', command=MDCT_UserInterface.set_cache_hash_size)
+    advanced_settings_menu.add_command(label='设定缓存中哈希值步进长度', command=MDCT_UserInterface.set_cache_hash_step)
+    advanced_settings_menu.add_command(label='清空缓存', command=MDCT_UserInterface.clear_cache)
 
     capture_method_menu_var = tk.StringVar(capture_method_menu)
     capture_method_menu_var.set(get_setting('capture_method'))
@@ -183,6 +193,9 @@ try:
         con1 = sqlite3.connect('ygocore.cdb')
         cursor1 = con1.cursor()
 
+        con_cache = sqlite3.connect('cache.db')
+        cursor_cache = con_cache.cursor()
+
         screenshot_result = MDCT_Common.get_screenshots_for_ocr()
         if screenshot_result[0] == MDCT_Common.RETURN_CODE_NO_WINDOW:
             if current_card_id != MDCT_Common.RETURN_CODE_NO_WINDOW:
@@ -201,20 +214,22 @@ try:
                 CDPU.changeCardDetail(MDCT_Common.WELCOME_MESSAGE + '　　未能匹配到任何卡片。')
                 current_card_id = MDCT_Common.RETURN_CODE_NO_RESULT
             screenshotImg = screenshot_result[2]
-            # add LRU Cache Before OCR. Improved performance in most scenarios
-            imgMD5 = CDPU.dhash(screenshotImg)
-            imgCache = CDPU.getLRUCacheByKey(imgMD5)
-            if (imgCache == None):
+            
+            imgMD5 = CDPU.dhash(screenshotImg).replace('"', '""').replace('\\', '\\\\')
+            sql_cache = 'SELECT txt FROM cache WHERE hash = "{}"'.format(imgMD5)
+            res_cache = cursor_cache.execute(sql_cache).fetchall()
+            if len(res_cache) == 0:
                 screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
                 card_desc = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'))
                 card_desc = correct_recognition_result(card_desc)
                 card_desc = card_desc.replace(' ', '').replace('"', '""')
+                sql_cache = 'INSERT INTO cache (hash, txt) VALUES ("{}", "{}")'.format(imgMD5, card_desc)
+                cursor_cache.execute(sql_cache)
+                con_cache.commit()
             else:
-                card_desc = imgCache
+                card_desc = res_cache[0][0].replace('"', '""')
 
             if len(card_desc) >= 10:
-                CDPU.putKeyValueInCache(CDPU.dhash(screenshotImg), card_desc)
-
                 card_desc_work_list = card_desc.split('\n')
                 card_desc_found = False
                 card_desc_work_exchange_buffer = ''
@@ -241,15 +256,19 @@ try:
                         break
                     elif i == 0:
                         screenshotImg = screenshot_result[1]
-                        # add LRU Cache Before OCR. Improved performance in most scenarios
+                        
                         imgMD5 = CDPU.dhash(screenshotImg)
-                        imgCache = CDPU.getLRUCacheByKey(imgMD5)
-                        if (imgCache == None):
+                        sql_cache = 'SELECT txt FROM cache WHERE hash = "{}"'.format(imgMD5)
+                        res_cache = cursor_cache.execute(sql_cache).fetchall()
+                        if len(res_cache) == 0:
                             screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
                             card_name = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'), config='--psm 7')[:-1]
                             card_name = correct_recognition_result(card_name)
+                            sql_cache = 'INSERT INTO cache (hash, txt) VALUES ("{}", "{}")'.format(imgMD5, card_name.replace('"', '""'))
+                            cursor_cache.execute(sql_cache)
+                            con_cache.commit()
                         else:
-                            card_name = imgCache
+                            card_name = res_cache[0][0].replace('"', '""')
                         if len(card_name) >= 3:
                             sql_source = 'SELECT id, name FROM data WHERE name = "{}"'.format(card_name.replace('"', '""'))
                             res = cursor_source.execute(sql_source).fetchall()
@@ -276,6 +295,7 @@ try:
         con_source.close()
         con.close()
         con1.close()
+        con_cache.close()
 
     def get_card_raw_text():
         global current_card_id

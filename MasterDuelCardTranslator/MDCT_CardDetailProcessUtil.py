@@ -19,6 +19,8 @@ import threading
 from collections import OrderedDict
 from PIL import Image
 
+from MDCT_Common import get_setting
+
 class Cache(dict):
     def __init__(self, max_size):
         self.data = OrderedDict()
@@ -107,7 +109,9 @@ def putKeyValueInCache(k, v):
 def getText():
     return CardDetailProcessUtil.getPreDetailInfo()
 
-def dhash(image, hash_size=16):
+def dhash(image):
+    hash_size = get_setting('cache_hash_size')
+
     # Grayscale and shrink the image in one step.
     image = image.convert('L').resize(
         (hash_size + 1, hash_size),
@@ -127,11 +131,14 @@ def dhash(image, hash_size=16):
     # Convert the binary array to a hexadecimal string.
     decimal_value = 0
     hex_string = []
+    append_order = 0
     for index, value in enumerate(difference):
         if value:
             decimal_value += 2 ** (index % 8)
         if (index % 8) == 7:
-            hex_string.append(hex(decimal_value)[2:].rjust(2, '0'))
+            if append_order == 0:
+                hex_string.append(hex(decimal_value)[2:].rjust(2, '0'))
+            append_order = (append_order + 1) % get_setting('cache_hash_step')
             decimal_value = 0
 
     return ''.join(hex_string)

@@ -815,7 +815,9 @@ DEFAULT_SETTINGS = {
                 }
             }
         }
-    }
+    },
+    'cache_hash_size': 8,
+    'cache_hash_step': 1
 }
 
 SETTINGS = None
