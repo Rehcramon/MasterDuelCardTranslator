@@ -22,7 +22,7 @@ from ctypes import windll
 from PIL import Image
 import pyautogui
 
-VERSION = '2.3'
+VERSION = '2.4'
 
 SHORT_TITLE = 'MDCT v{}'.format(VERSION)
 
