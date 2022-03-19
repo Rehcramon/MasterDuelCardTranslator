@@ -33,7 +33,7 @@ import pytesseract
 import MDCT_Common
 from MDCT_Common import get_setting
 from MDCT_Common import set_setting
-from MDCT_CorrectRecognitionResult import correct_recognition_result
+from MDCT_ReplaceText import replace_text
 
 ROOT = None
 
@@ -135,7 +135,7 @@ def update_source():
     for source_card_info in res:
         source_card_id = source_card_info[0]
         source_card_name = source_card_info[1]
-        source_card_desc = (source_card_info[3] + '\r\n').replace('[ Pendulum Effect ]', '[Pendulum Effect]').replace('\r\n', '\n').replace('\n', ' ')
+        source_card_desc = (replace_text(source_card_info[3]) + '\r\n').replace('[ Pendulum Effect ]', '[Pendulum Effect]').replace('\r\n', '\n').replace('\n', ' ')
         source_card_desc_list = source_card_desc.split('---------------------------------------- ')
         if len(source_card_desc_list) == 2:
             source_card_desc = (source_card_desc_list[0] + source_card_desc_list[1]).replace('[ Monster Effect ]', ' ').replace('[ Flavor Text ]', ' ')
@@ -290,11 +290,11 @@ def configure_custom_position():
 
     card_name_screenshot = pyautogui.screenshot(region=(nx, ny, nw, nh))
     card_name = pytesseract.image_to_string(ImageOps.invert(card_name_screenshot.convert('L')), lang=get_setting('source_language'), config='--psm 7')[:-1]
-    card_name = correct_recognition_result(card_name)
+    card_name = replace_text(card_name)
 
     card_desc_screenshot = pyautogui.screenshot(region=(tx, ty, tw, th))
     card_desc = pytesseract.image_to_string(ImageOps.invert(card_desc_screenshot.convert('L')), lang=get_setting('source_language'))[:-1]
-    card_desc = correct_recognition_result(card_desc)
+    card_desc = replace_text(card_desc)
 
     ret = tk.messagebox.askquestion('请确认配置结果', '''\
 当前识别结果的卡名为：

@@ -17,6 +17,10 @@
 import re
 
 BEFORE_AND_AFTER_PLAIN = [
+    (' or more', '+'),
+    ('Graveyard', 'GY'),
+    ('Once per turn, during either player\'s turn: ', 'Once per turn (Quick Effect): '),
+
     ('@ignister', '@Ignister'),
     ('@lgnister', '@Ignister'),
     ('A.i.', 'A.I.'),
@@ -29,7 +33,7 @@ BEFORE_AND_AFTER_REGULAR = [
     ('Evil(.){1,3}Twin', 'Evil★Twin')
 ]
 
-def correct_recognition_result(s):
+def replace_text(s):
     for p in BEFORE_AND_AFTER_PLAIN:
         s = s.replace(p[0], p[1])
     for p in BEFORE_AND_AFTER_REGULAR:

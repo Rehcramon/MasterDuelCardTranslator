@@ -34,7 +34,7 @@ from MDCT_Common import set_setting
 import MDCT_UserInterface
 import MDCT_CardDetailProcessUtil as CDPU
 import MDCT_TargetParser
-from MDCT_CorrectRecognitionResult import correct_recognition_result
+from MDCT_ReplaceText import replace_text
 
 try:
     con_cache = sqlite3.connect('cache.db')
@@ -221,7 +221,7 @@ try:
             if len(res_cache) == 0:
                 screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
                 card_desc = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'))
-                card_desc = correct_recognition_result(card_desc)
+                card_desc = replace_text(card_desc)
                 card_desc = card_desc.replace(' ', '').replace('"', '""')
                 sql_cache = 'INSERT INTO cache (hash, txt) VALUES ("{}", "{}")'.format(imgMD5, card_desc)
                 cursor_cache.execute(sql_cache)
@@ -263,7 +263,7 @@ try:
                         if len(res_cache) == 0:
                             screenshotInvertImg = ImageOps.invert(screenshotImg.convert('L'))
                             card_name = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'), config='--psm 7')[:-1]
-                            card_name = correct_recognition_result(card_name)
+                            card_name = replace_text(card_name)
                             sql_cache = 'INSERT INTO cache (hash, txt) VALUES ("{}", "{}")'.format(imgMD5, card_name.replace('"', '""'))
                             cursor_cache.execute(sql_cache)
                             con_cache.commit()
@@ -305,10 +305,10 @@ try:
         if screenshot_result[0] == MDCT_Common.RETURN_CODE_OK:
             screenshotInvertImg = ImageOps.invert(screenshot_result[1].convert('L'))
             card_name = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'), config='--psm 7')[:-1]
-            card_name = correct_recognition_result(card_name)
+            card_name = replace_text(card_name)
             screenshotInvertImg = ImageOps.invert(screenshot_result[2].convert('L'))
             card_desc = pytesseract.image_to_string(screenshotInvertImg, lang=get_setting('source_language'))
-            card_desc = correct_recognition_result(card_desc)
+            card_desc = replace_text(card_desc)
             raw_text = 'Name:\n{}\n\nText:\n{}'.format(card_name, card_desc)
         else:
             raw_text = 'RETURN CODE: {}'.format(screenshot_result[0])
