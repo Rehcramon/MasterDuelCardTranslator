@@ -273,6 +273,9 @@ try:
                             sql_source = 'SELECT id, name FROM data WHERE name = "{}"'.format(card_name.replace('"', '""'))
                             res = cursor_source.execute(sql_source).fetchall()
                             if len(res) != 1 and len(card_name) >= 10:
+                                sql_source = 'SELECT id, name FROM data WHERE name LIKE "{}%"'.format(card_name[:-1].replace('"', '""'))
+                                res = cursor_source.execute(sql_source).fetchall()
+                            if len(res) != 1 and len(card_name) >= 10:
                                 sql_source = 'SELECT id, name FROM data WHERE name LIKE "%{}%"'.format(card_name[1:-1].replace('"', '""'))
                                 res = cursor_source.execute(sql_source).fetchall()
                             if len(res) == 1:
