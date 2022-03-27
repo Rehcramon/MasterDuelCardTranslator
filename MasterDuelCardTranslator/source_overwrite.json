@@ -58,5 +58,11 @@
 		"name": "Raremetalfoes Bismugear",
 		"type": "Pendulum Effect Monster",
 		"desc": "[ Pendulum Effect ]\r\nOnce per turn: You can target 1 other face-up card you control; destroy it, and if you do, Set 1 \"Metalfoes\" Spell/Trap directly from your Deck.\r\n----------------------------------------\r\n[ Monster Effect ]\r\nIf this card on the field is destroyed by battle or card effect: You can add 1 \"Metalfoes\" monster from your Deck to your hand during the End Phase of this turn. You can only use this effect of \"Raremetalfoes Bismugear\" once per turn."
+	},
+	{
+		"id": 52404456,
+		"name": "Madolche Messengelato",
+		"type": "Effect Monster",
+		"desc": "If this card in your possession is destroyed by an opponent's card and sent to your GY: Shuffle this card into the Deck. When this card is Special Summoned: You can add 1 \"Madolche\" Spell/Trap from your Deck to your hand. You must control a face-up \"Madolche\" Beast monster to activate and to resolve this effect."
 	}
 ]
