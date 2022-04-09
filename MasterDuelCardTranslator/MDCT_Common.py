@@ -727,6 +727,8 @@ WELCOME_MESSAGE = '''\
 
 MODE_DUEL = 'Duel'
 MODE_DECK = 'Deck'
+MODE_TMP_RIGHT = 'TmpRight'
+MODE_TMP_FULL = 'TmpFull'
 CAPTURE_METHOD_FINDWINDOW_PRINTWINDOW = 'FindWindow & PrintWindow'
 CAPTURE_METHOD_FINDWINDOW_SCREENSHOT = 'FindWindow & Screenshot'
 CAPTURE_METHOD_SCREENSHOT_CUSTOM = 'Screenshot & Custom'
@@ -898,11 +900,12 @@ def get_screenshot(window_title):
         ret = (RETURN_CODE_OK, {'screenshot': im, 'w': w, 'h': h})
     return ret
 
-def get_screenshots_for_ocr():
+def get_screenshots_for_ocr(mode = None):
     ret = get_screenshot('masterduel')
     if ret[0] != RETURN_CODE_OK:
         return (ret[0], None, None)
-    mode = get_setting('mode')
+    if mode is None:
+        mode = get_setting('mode')
     capture_method = get_setting('capture_method')
     p = get_setting('capture_method_config')[capture_method]['position'][mode]
     name_image = ret[1]['screenshot'].crop((
